@@ -1,0 +1,37 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+question 6
+
+##what is the average calories of all drinks?
+
+```{r}
+average_cals <- drinks_content %>% 
+  summarise(mean_calories = mean(Calories)) %>% 
+  pull()
+
+drinks_content %>% 
+  pull(Calories) %>% 
+  mean()
+```
+
+both do the same thing but top one more typical
+
+can now assign the top one too an object which gives the average cals for all drinks
+
+
+##create summary table that shows the average calories for each prep type
+
+```{r}
+drinks_content %>% 
+  group_by(Beverage_prep) %>% 
+  summarise(mean_cals = mean(Calories)) %>% 
+  
+  ##filter data to show only beverage prep types with more than the avg number 
+  ## of calories for all drinks
+  filter(mean_cals > average_cals) %>% 
+  arrange(desc(mean_cals))
+```
+
