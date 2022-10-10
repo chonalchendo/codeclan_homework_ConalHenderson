@@ -76,7 +76,9 @@ cleaned_book_data %>%
 book_imputed <- cleaned_book_data %>% 
   mutate(
     average_rating = coalesce(average_rating, mean(average_rating, na.rm = TRUE))
-    )
+    ) %>% 
+# Filter out authors which state they are not a book
+  filter(authors != "NOT A BOOK")
 
 book_imputed %>% 
    summarise(
@@ -101,9 +103,11 @@ book_imputed %>%
   group_by(authors) %>% 
   mutate(avg_author_rating = mean(average_rating)) %>% 
   ungroup() %>% 
-  mutate(diff_rating = avg_author_rating - average_rating) %>% 
+  mutate(diff_rating = average_rating - avg_author_rating) %>% 
   arrange(desc(diff_rating))
 ```
+
+
 
 #average rating per publisher
 
@@ -112,7 +116,7 @@ avg_pub_rating <- book_imputed %>%
   select(publisher, average_rating, ratings_count, text_reviews_count) %>%
   group_by(publisher) %>% 
   summarise(mean_avg_rating = mean(average_rating)) %>% 
-  arrange(desc(mean_avg_rating)) 
+  arrange(desc(mean_avg_rating))
 
 avg_pub_rating
  
