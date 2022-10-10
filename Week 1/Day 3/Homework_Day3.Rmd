@@ -32,7 +32,7 @@ library(tidyverse)
 
 ```{r}
 movies_selected <- movie_data %>% 
-  select(title,budget,runtime)
+  select(title, budget, runtime)
 ```
 
 
@@ -73,7 +73,7 @@ question 5: Impute the missing values in runtime with the median runtime using c
 ```{r}
 movie_imputed <- movie_runtime %>% 
   mutate(
-    runtime = coalesce(runtime,mean(runtime,na.rm = TRUE))
+    runtime = coalesce(runtime, mean(runtime, na.rm = TRUE))
     )
 
 movie_imputed %>% 
@@ -90,12 +90,12 @@ Question 6: Finally, use the slice_min and slice_max functions on movies_imputed
 ```{r}
 
 movie_imputed %>% 
-  select(title,runtime) %>% 
-  slice_max(runtime,n = 10)
+  select(title, runtime) %>% 
+  slice_max(runtime, n = 10)
 
 movie_imputed %>% 
-  select(title,runtime) %>% 
-  slice_min(runtime,n = 10)
+  select(title, runtime) %>% 
+  slice_min(runtime, n = 10)
  
 
 ```
@@ -105,9 +105,9 @@ question 7: Using the if_else function, impute anything with a budget below $100
 
 ```{r}
 
-movie_imputed <- movie_data %>% 
-  select(title,budget) %>% 
-  mutate(budget = if_else(budget < 100 ,median(budget),budget))
+movie_imputed <- movie_imputed %>% 
+  select(title, budget) %>% 
+  mutate(budget = if_else(budget < 100, median(budget), budget))
 
 movie_imputed
 

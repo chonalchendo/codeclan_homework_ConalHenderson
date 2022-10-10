@@ -1,0 +1,190 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+
+book_data <- read.csv("data/books.csv")
+
+#investigate the data
+
+dim(book_data)
+head(book_data)
+names(book_data)
+str(book_data)
+summary(book_data)
+tail(book_data)
+view(book_data)
+
+book_data
+```
+
+```{r}
+
+#Clean the data
+
+clean_book_data <- book_data %>% 
+  clean_names()
+
+cleaner_book_data <- clean_book_data %>% 
+  rename(
+    row_id = "rowid"
+  )
+cleaner_book_data
+
+
+numeric_book_data <- cleaner_book_data %>% 
+  select(row_id, book_id, average_rating, isbn, isbn13, num_pages, ratings_count,
+         text_reviews_count, publication_date)
+
+colSums(is.na(numeric_book_data))
+
+
+cleaner_book_data %>% 
+  summarise_all(~ sum(is.na(.)))
+
+#OR can use across() function to see if there are any NA values
+
+cleaner_book_data %>% 
+  summarise(
+    across(
+      everything(), ~ sum(is.na(.))))
+
+cleaner_book_data
+
+view(cleaner_book_data)
+```
+
+#change 0 values to NA, then change NA values to mean average rating
+
+```{r}
+
+cleaned_book_data <- cleaner_book_data %>% 
+  mutate(average_rating = na_if(average_rating, 0))
+
+cleaned_book_data %>% 
+  summarise(
+    across(
+      .cols = average_rating,
+      .fns = ~sum(is.na(.x))
+    )
+  )
+
+book_imputed <- cleaned_book_data %>% 
+  mutate(
+    average_rating = coalesce(average_rating, mean(average_rating, na.rm = TRUE))
+    )
+
+book_imputed %>% 
+   summarise(
+    across(
+      .cols = average_rating,
+      .fns = ~sum(is.na(.x))
+    )
+  )
+
+book_imputed
+
+```
+
+# Average rating per author
+
+```{r}
+
+book_imputed
+
+book_imputed %>% 
+  select(authors, average_rating) %>% 
+  group_by(authors) %>% 
+  mutate(avg_author_rating = mean(average_rating)) %>% 
+  ungroup() %>% 
+  mutate(diff_rating = avg_author_rating - average_rating) %>% 
+  arrange(desc(diff_rating))
+```
+
+#average rating per publisher
+
+```{r}
+avg_pub_rating <- book_imputed %>% 
+  select(publisher, average_rating, ratings_count, text_reviews_count) %>%
+  group_by(publisher) %>% 
+  summarise(mean_avg_rating = mean(average_rating)) %>% 
+  arrange(desc(mean_avg_rating)) 
+
+avg_pub_rating
+ 
+
+
+```
+
+
+
+# which pulisher has produced the best books based on average rating?
+
+```{r}
+book_imputed %>% 
+  select(title, publisher, average_rating) %>% 
+  group_by(publisher) %>% 
+  mutate(avg_publisher_rating = mean(average_rating)) %>% 
+  ungroup() %>% 
+  mutate(diff_publisher_rating = avg_publisher_rating - average_rating) %>% 
+  arrange(desc(diff_publisher_rating))
+  
+```
+
+
+#change movies rating count to median if they have fewer than 500 ratings
+
+```{r}
+
+book_imputed %>% 
+  select(title, ratings_count) %>% 
+  arrange(desc(ratings_count)) %>% 
+  slice_max(ratings_count, n = 5)
+
+# 1. Twilight 1
+# 2. The Hobbit there and back again 
+# 3. the catcher in the rye 
+# 4. Angels and Demons
+# 5. Harry Potter 3
+
+
+book_imputed %>% 
+  select(title, authors, ratings_count) %>% 
+  mutate(ratings_count = if_else(ratings_count < 700, median(ratings_count), ratings_count)) %>% 
+  group_by(authors) %>% 
+  mutate(mean_author_ratings_count = mean(ratings_count)) %>% 
+  arrange(desc(mean_author_ratings_count))
+
+
+
+```
+
+#new condensed data of random book titles
+
+```{r}
+book_name_sample <- book_imputed %>% 
+  distinct(title) %>% 
+  sample_n(5, replace = FALSE) %>% 
+  pull()
+
+book_name_sample
+
+book_sample <- book_imputed %>%
+  filter(title %in% book_name_sample)
+
+book_sample
+
+book_sample %>% 
+  select(title, ratings_count) %>% 
+  group_by(title) %>% 
+  mutate(avg_ratings_count = mean(ratings_count)) %>% 
+  ungroup() %>% 
+  mutate(diff_ratings_average = ratings_count - avg_ratings_count) %>% 
+  arrange(desc(diff_ratings_average))
+
+```
+
