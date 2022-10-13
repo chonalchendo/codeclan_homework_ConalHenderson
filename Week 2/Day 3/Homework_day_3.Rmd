@@ -94,7 +94,9 @@ example_function <- function(input){
        print("Invalid input")
      }
     
-  }
+}
+
+# don't need to write another 'else if' statement, as if input isn't < 10 then the opposite will be returned. 
  
 
 example_function(100)
