@@ -45,13 +45,19 @@ You will want to give a name to the matrix you create.
 
 weather_2_weeks <- c(13, 11, 12, 12, 13, 15, 13, 12, 12, 10, 8, 7, 7, 8)
 
-weather_matrix <- matrix(weather_2_weeks, nrow = 2, ncol = 7, dimnames = list(c("week 1", "week 2"),
-                                           c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")))
+weather_matrix <- matrix(weather_2_weeks, 
+                         nrow = 2, ncol = 7, 
+                         dimnames = list(c("Week 1", "Week 2"),
+                                         c("Monday", "Tuesday", "Wednesday", "Thursday",
+                                           "Friday", "Saturday", "Sunday"))
+                         )
 
 
 matrix <- matrix(weather_2_weeks, nrow = 2, ncol = 7)
 
 matrix
+
+weather_matrix
 
 ```
 
@@ -108,16 +114,16 @@ vector_2 <- c(50:60)
 vector_3 <- c(1:10)
 
 same_elements <- function(input_1, input_2){
-  if(all(input_1 == input_2)){
+  if (all(input_1 == input_2)){
     return("Exactly the same")
-  }else if(all(input_1 == sort(input_2))){
-    return("The same")
-  }else{
-    return("Different")
+  }else if (all(sort(input_1) == sort(input_2))){
+    return ("The same")
+  }
+    return ("Different")
   }
   
-}
 
+same_elements(vector_1, vector_3)
 
 ```
 
@@ -125,6 +131,8 @@ Question 7.
 Write code that prints a multiplication table for numbers up to 12. i.e. there will be 12 rows and 12 columns, and each element should be the row number multiplied by the column number.
 
 ```{r}
+
+## never got round to attempting this last night, attempt from this morning/using the answers. 
 
 my_matrix <- matrix(nrow = 12, ncol = 12)
 
