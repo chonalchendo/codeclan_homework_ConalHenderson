@@ -134,6 +134,11 @@ salary,
 fte_hours * salary  AS effective_yearly_salary
 FROM employees 
 
+
+-- didnt have time when I got home to do the extensions, 
+-- I only managed to do 16 and 17 this morning (18/10/22)
+-- before class start. 
+
 -- question 16
 
 -- The corporation wants to make name badges for a forthcoming conference. 
