@@ -183,8 +183,8 @@ first_name,
 last_name, 
 salary,
 CASE
-WHEN salary < 40000 THEN 'High'
-WHEN salary >= 40000 THEN 'Low'
+WHEN salary < 40000 THEN 'Low'
+WHEN salary >= 40000 THEN 'High'
 END AS salary_class
 FROM employees
 WHERE salary IS NOT NULL
