@@ -138,6 +138,7 @@ FROM employees
 -- didnt have time when I got home to do the extensions, 
 -- I only managed to do 16 and 17 this morning (18/10/22)
 -- before class start. 
+-- managed to complete it all in class
 
 -- question 16
 
@@ -165,6 +166,27 @@ WHERE first_name IS NOT NULL AND last_name IS NOT NULL AND department IS NOT NUL
 
 
 SELECT 
-concat(last_name, ' - ', department, ' (joined ', start_date,')') AS name_badge
+concat(last_name, ' - ', department, ' (joined ', TO_CHAR(start_date, 'yyyy') ,')') AS name_badge
 FROM employees
 WHERE first_name IS NOT NULL AND last_name IS NOT NULL AND department IS NOT NULL
+
+
+-- quetion 18
+
+-- Return the first_name, last_name and salary of all employees together 
+-- with a new column called salary_class with a 
+-- value 'low' where salary is less than 40,000 and 
+-- value 'high' where salary is greater than or equal to 40,000.
+
+SELECT 
+first_name, 
+last_name, 
+salary,
+CASE
+WHEN salary < 40000 THEN 'High'
+WHEN salary >= 40000 THEN 'Low'
+END AS salary_class
+FROM employees
+WHERE salary IS NOT NULL
+
+
