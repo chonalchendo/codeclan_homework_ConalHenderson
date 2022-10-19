@@ -5,7 +5,7 @@
 
 SELECT *
 FROM employees
-WHERE department = 'Human Resources'
+WHERE department = 'Human Resources';
 
 
 -- Question 2.
@@ -13,14 +13,14 @@ WHERE department = 'Human Resources'
 
 SELECT first_name, last_name, country
 FROM employees
-WHERE department = 'Legal'
+WHERE department = 'Legal';
 
 -- Question 3.
 -- Count the number of employees based in Portugal.
 
 SELECT count(*) AS num_employees_portugal
 FROM employees
-WHERE country = 'Portugal'
+WHERE country = 'Portugal';
 
 
 
@@ -30,7 +30,7 @@ WHERE country = 'Portugal'
 
 SELECT count(*) AS num_spain_portugal
 FROM employees
-WHERE country IN ('Spain', 'Portugal')
+WHERE country IN ('Spain', 'Portugal');
 
 
 -- Question 5.
@@ -38,7 +38,7 @@ WHERE country IN ('Spain', 'Portugal')
 
 SELECT count(*)
 FROM pay_details
-WHERE local_account_no IS NULL
+WHERE local_account_no IS NULL;
 
 
 -- Question 6.
@@ -46,14 +46,14 @@ WHERE local_account_no IS NULL
 
 SELECT count(*)
 FROM pay_details 
-WHERE local_account_no IS NULL AND iban IS NULL 
+WHERE local_account_no IS NULL AND iban IS NULL; 
 
 -- Question 7.
 -- Get a table with employees first_name and last_name ordered alphabetically by last_name (put any NULLs last).
 
 SELECT first_name, last_name
 FROM employees
-ORDER BY last_name ASC  NULLS LAST
+ORDER BY last_name ASC  NULLS LAST;
 
 
 -- Question 8.
@@ -62,7 +62,7 @@ ORDER BY last_name ASC  NULLS LAST
 
 SELECT first_name, last_name, country
 FROM employees 
-ORDER BY country ASC NULLS LAST, last_name ASC NULLS LAST
+ORDER BY country ASC NULLS LAST, last_name ASC NULLS LAST;
 
 
 --Question 9.
@@ -89,7 +89,7 @@ LIMIT 1;
 
 SELECT count(*)
 FROM employees
-WHERE first_name LIKE 'F%'
+WHERE first_name LIKE 'F%';
 
 
 
@@ -98,7 +98,7 @@ WHERE first_name LIKE 'F%'
 
 SELECT *
 FROM employees
-WHERE email LIKE '%@yahoo%'
+WHERE email LIKE '%@yahoo%';
 
 
 
@@ -106,7 +106,7 @@ WHERE email LIKE '%@yahoo%'
 
 SELECT count(*)
 FROM employees
-WHERE pension_enrol = TRUE AND country NOT IN ('Spain', 'Germany')
+WHERE pension_enrol = TRUE AND country NOT IN ('Spain', 'Germany');
 
 
 
@@ -116,7 +116,7 @@ WHERE pension_enrol = TRUE AND country NOT IN ('Spain', 'Germany')
 
 SELECT max(salary)
 FROM employees
-WHERE department = 'Engineering' AND fte_hours = 1.0
+WHERE department = 'Engineering' AND fte_hours = 1.0;
 
 
 -- Question 15.
@@ -132,7 +132,7 @@ last_name,
 fte_hours, 
 salary,
 fte_hours * salary  AS effective_yearly_salary
-FROM employees 
+FROM employees; 
 
 
 -- didnt have time when I got home to do the extensions, 
@@ -150,9 +150,13 @@ FROM employees
 
 
 SELECT 
-concat(last_name, ' - ', department) AS name_badge
-FROM employees
-WHERE first_name IS NOT NULL AND last_name IS NOT NULL AND department IS NOT NULL
+concat(first_name, ' ', last_name, ' - ', department) AS name_badge
+FROM 
+employees
+WHERE 
+first_name IS NOT NULL AND 
+last_name IS NOT NULL AND 
+department IS NOT NULL;
 
 
 -- question 17
@@ -166,9 +170,14 @@ WHERE first_name IS NOT NULL AND last_name IS NOT NULL AND department IS NOT NUL
 
 
 SELECT 
-concat(last_name, ' - ', department, ' (joined ', TO_CHAR(start_date, 'yyyy') ,')') AS name_badge
-FROM employees
-WHERE first_name IS NOT NULL AND last_name IS NOT NULL AND department IS NOT NULL
+concat(first_name, ' ', last_name, ' - ', department, 
+' (joined ', TO_CHAR(start_date, 'FMMonth, YYYY'),')') AS name_badge
+FROM
+employees
+WHERE 
+first_name IS NOT NULL AND 
+last_name IS NOT NULL AND 
+department IS NOT NULL;
 
 
 -- quetion 18
@@ -186,7 +195,9 @@ CASE
 WHEN salary < 40000 THEN 'Low'
 WHEN salary >= 40000 THEN 'High'
 END AS salary_class
-FROM employees
-WHERE salary IS NOT NULL
+FROM 
+employees
+WHERE 
+salary IS NOT NULL;
 
 
