@@ -113,13 +113,13 @@ Calculate the total_day_charge for each team.
 to show only those teams with a total_day_charge greater than 5000?
 */
 
-SELECT t.id AS team_id, t."name" AS team_name, count(e.id) 
+SELECT t.id, t."name", count(e.id) 
 FROM employees AS e
 LEFT JOIN teams AS t
 ON e.team_id = t.id 
 GROUP BY t.id  
 
-SELECT t.id AS team_id, t."name" AS team_name, count(e.id), t.charge_cost,   
+SELECT t.id, t."name", count(e.id), t.charge_cost,   
 CAST (t.charge_cost AS int) * count(e.id) AS total_day_charge
 FROM employees AS e
 LEFT JOIN teams AS t
@@ -127,7 +127,7 @@ ON e.team_id = t.id
 GROUP BY t.id 
 
 
-SELECT t.id AS team_id, t."name" AS team_name, count(e.id)
+SELECT t.id, t."name", count(e.id)
 FROM employees AS e
 LEFT JOIN teams AS t
 ON e.team_id = t.id 
