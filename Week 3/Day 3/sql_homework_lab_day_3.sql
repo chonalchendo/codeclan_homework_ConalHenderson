@@ -165,12 +165,12 @@ LIMIT 1
 
 
 
-SELECT department, count(*)
+SELECT department, count(id)
 FROM employees  
 WHERE first_name IS NULL
 GROUP BY department 
-HAVING count(*) > 1
-ORDER BY department 
+HAVING count(id) > 1
+ORDER BY count(id) DESC NULLS LAST, department ASC NULLS LAST
 
 
 -- Question 15. [Bit tougher]
@@ -185,6 +185,7 @@ FROM employees
 WHERE first_name IS NOT NULL
 GROUP BY first_name 
 HAVING count(first_name) > 1
+ORDER BY count(first_name) DESC, first_name ASC
 
 
 -- Question 16. [Tough]
