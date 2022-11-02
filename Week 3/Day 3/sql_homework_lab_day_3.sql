@@ -226,3 +226,34 @@ GROUP BY Department
 
 
 
+
+-- Get a list of the id, first_name, last_name, department, salary and fte_hours of employees
+--  in the largest department. 
+-- Add two extra columns showing the ratio of each employee’s salary 
+-- to that department’s average salary, 
+-- and each employee’s fte_hours to that department’s average fte_hours.
+
+
+WITH dep_avgs(id, name, avg_salary) AS (
+    SELECT
+        e.department,
+        AVG(e.salary)
+    FROM employees AS e
+    GROUP BY e.department 
+)
+SELECT 
+    e.first_name,
+    e.last_name,
+    team_avgs.name AS team_name,
+    e.salary,
+    e.salary / team_avgs.avg_salary AS salary_over_team_avg
+FROM employees AS e INNER JOIN team_avgs
+ON e.team_id = team_avgs.id
+WHERE team = 'Legal'
+ORDER BY e.team_id
+
+
+
+
+
+
