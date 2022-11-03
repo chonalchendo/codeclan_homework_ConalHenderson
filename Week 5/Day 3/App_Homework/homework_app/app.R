@@ -18,12 +18,8 @@ genre <- imdb_movies %>%
   distinct(main_genre) %>% 
   arrange()
 
-year <- imdb_movies %>% 
-  distinct(year) %>% 
-  arrange()
+year <- sort(unique(imdb_movies$year), decreasing = TRUE)
 
-
-year
 
 
 ui <- fluidPage(
