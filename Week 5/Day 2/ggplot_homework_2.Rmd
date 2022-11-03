@@ -37,7 +37,9 @@ What is the distribution of backpack weights that students are carrying? Choose 
 back_pack %>% 
   ggplot() +
   aes(x = backpack_weight) +
-  geom_histogram(binwidth = 5, col = "white") 
+  geom_histogram(binwidth = 5, col = "white") +
+  labs(x = "Backpack Weight", y = "Number of Students", 
+       title = "Students' Backpack Weight")
 ```
 There is a normal distribution of backpack weight among students with the most
 occuring at a weight of 10 and 0 occuring at 30. 
@@ -52,7 +54,9 @@ back_pack %>%
   ggplot() +
   aes(x = backpack_weight) +
   geom_histogram(binwidth = 5, col = "white") +
-  facet_wrap(~sex)
+  facet_wrap(~sex) +
+  labs(x = "Backpack Weight", y = "Number of Students", 
+       title = "Students' Backpack Weight (Male and Female)")
 ```
 
 Females account for most weight categories less than 20. Where as Males make up
@@ -68,7 +72,9 @@ back_pack %>%
   ggplot() +
   aes(x = body_weight, y = backpack_weight) +
   geom_point() +
-  geom_smooth(method = "lm", se = TRUE)
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(x = "Body Weight", y = "Backpack Weight", 
+       title = "Relationship between Body Weight and Bagpack Weight")
 ```
 
 There is a small positive correlation between body weight and backpack weight.
@@ -85,7 +91,10 @@ back_pack %>%
   ggplot() +
   aes(x = body_weight, y = backpack_weight, colour = sex) +
   geom_point() +
-  geom_smooth(method = "lm", se = TRUE)
+  geom_smooth(method = "lm", se = TRUE) +
+  facet_wrap(~sex) +
+  labs(x = "Body Weight", y = "Backpack Weight", 
+       title = "Relationship between Body Weight and Bagpack Weight (Male and Female)")
 ```
 
 
@@ -116,7 +125,7 @@ Is this proportion different between men and women?
 back_pack %>% 
   ggplot( aes(x = back_problems, fill = sex)) +
   geom_bar(position = "dodge") +
-  scale_x_continuous(breaks = seq(0, 1))
+  scale_x_continuous(breaks = seq(0, 1)) 
 ```
 
 When gender is factored in, we can see the majority of people reporting back
@@ -130,12 +139,11 @@ Now you’ve investigated your data separately, create plots to describe the rel
 
 ```{r}
 back_pack %>% 
-  filter(back_problems == 1) %>% 
   ggplot() +
-  aes(x = body_weight, y = backpack_weight) +
+  aes(x = body_weight, y = backpack_weight, colour = back_problems) +
   geom_point() +
   geom_smooth(method = "lm", se = TRUE) +
-  facet_wrap(~sex)
+  facet_wrap(sex ~ back_problems)
 ```
 
 Females with reported back problems display a positive relationship with lots of 
