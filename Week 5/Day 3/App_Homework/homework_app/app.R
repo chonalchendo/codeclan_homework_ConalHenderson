@@ -22,6 +22,7 @@ year <- imdb_movies %>%
   distinct(year) %>% 
   arrange()
 
+
 year
 
 
@@ -88,8 +89,9 @@ server <- function(input, output) {
       filter(main_genre == input$main_genre) %>%
       filter(year == input$year) %>%
       ggplot() +
-      aes(x = movie_title, y = rating) +
+      aes(x = movie_title, y = rating, fill = "#FF69B4") +
       geom_col() +
+      theme(legend.position = "none") +
       coord_flip() +
       scale_y_continuous(breaks = seq(1,10)) +
       labs(x = "Movie Title", y = "Movie")
