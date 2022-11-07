@@ -11,9 +11,6 @@ imdb_movies <- read_csv(here::here("imdb_movies.csv")) %>% clean_names()
 
 # view(imdb_movies)
 
-# App that shows the five highest rated movies for the last 5 years 
-# each tab is a different year
-
 genre <- imdb_movies %>% 
   distinct(main_genre) %>% 
   arrange()
@@ -67,7 +64,7 @@ ui <- fluidPage(
     tabPanel(
       title = "About",
       
-      "This dashboard shows movies ratings that achieved or exceeded a rating of
+      "This dashboard shows movie ratings that achieved or exceeded a rating of
       8.0 based on year and genre"
     ),
       #content
@@ -85,8 +82,8 @@ server <- function(input, output) {
       filter(main_genre == input$main_genre) %>%
       filter(year == input$year) %>%
       ggplot() +
-      aes(x = movie_title, y = rating, fill = "#FF69B4") +
-      geom_col() +
+      aes(x = movie_title, y = rating) +
+      geom_col(fill = "#ff1493") +
       theme(legend.position = "none") +
       coord_flip() +
       scale_y_continuous(breaks = seq(1,10)) +
