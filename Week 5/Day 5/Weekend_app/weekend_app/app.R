@@ -1,5 +1,7 @@
 library(shiny)
+library(tidyverse)
 library(bslib)
+library(ggrepel)
 
 ui <- fluidPage(
   theme = bs_theme(
@@ -72,9 +74,30 @@ ui <- fluidPage(
       
       DT::dataTableOutput("table_games")
       
+    ),
+    
+    tabPanel(
+      title = "Ratings Relationship",
+      
+      fluidRow(
+        plotOutput("ratings_plot")
+      ),
+      
+      fluidRow(
+        column(
+          6,
+          selectInput(
+            inputId = "platform",
+            label = "Choose a Platform",
+            choices = platform
+          )
+        )
+      ),
+      
+      actionButton(inputId = "update", label = "Update")
+        )
+      )
     )
-  )
-)
 
 mainPanel(plotOutput("game_plot"))
 
@@ -90,7 +113,7 @@ server <- function(input, output, session) {
       theme(legend.position = "none") +
       theme_bw() +
       coord_flip()  +
-      labs(x = "Game Title", y = "Sales")
+      labs(x = "Game Title", y = "Sales (Millions)")
   )
   
   output$sales_plot <- renderPlot(
@@ -111,6 +134,25 @@ server <- function(input, output, session) {
     game_sales %>% 
       filter(rating == input$rating)
   })
+  
+  
+  filtered_platform <- eventReactive(
+    eventExpr = input$update,
+    game_sales %>% 
+      filter(platform == input$platform)
+  )
+  # this isn't working for some reason
+  output$ratings_plot <- renderPlot(
+    game_sales %>%
+      filtered_platform() %>% 
+      ggplot() +
+      aes(x = user_score, y = critic_score) +
+      geom_point() +
+      geom_text_repel(aes(label = input$publisher)) +
+      theme(legend.position = "none") +
+      theme_bw() +
+      labs(x = "User Score", y = "Critic Score")
+  )
 }
 
 shinyApp(ui, server)

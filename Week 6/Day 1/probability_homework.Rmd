@@ -1,0 +1,129 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(gtools)
+source('../../../codeclan_work/Week 6/Day 1/prob.R')
+```
+
+```{r}
+titanic <- read_csv("titanic.csv")
+
+titanic
+```
+
+```{r}
+titanic %>% 
+  distinct(class)
+
+# Feel like it needs to be divided by the total passengers survived? 
+
+titanic %>% 
+  mutate(passenger_crew = if_else(class == c("3rd", "2nd", "1st"), "passenger", "crew")) %>% 
+  select(survived, passenger_crew) %>% 
+  filter(passenger_crew == "passenger", survived == "yes") %>% 
+  summarise(prob = n() / nrow(titanic))
+
+
+```
+
+```{r}
+titanic %>% 
+  mutate(passenger_crew = if_else(class == c("3rd", "2nd", "1st"), "passenger", "crew")) %>% 
+  select(survived, passenger_crew) %>% 
+  filter(passenger_crew == "crew", survived == "yes") %>% 
+  summarise(prob = n() / nrow(titanic))
+```
+
+Question 1.
+If I roll a six-sided dice once, what is the probability of getting a number less than 5?
+
+
+```{r}
+4/6
+```
+
+
+Question 2.
+How many outcomes are there in the sample space of an experiment in which we toss three dice?
+
+```{r}
+three_dice <- rolldie(3) %>% 
+  summarise(outcomes = n())
+
+three_dice
+```
+
+Question 3.
+In an experiment where we roll four dice:
+
+how many outcomes are in the event where the total of the four dice equals 5, 6 or 7)?
+what is the probability of this event?
+what assumptions do we apply in answering part ii?
+
+
+```{r}
+roll_four <- rolldie(4) %>% 
+  mutate(total = rowSums(.))
+
+roll_four %>% 
+  filter(total == c(5, 6, 7)) %>% 
+  nrow()
+```
+
+Question 4.
+Five chairs are placed in a row in a room, along with five people of differing height. The people sit down randomly on the chairs. What is the probability that they sit in order of decreasing height, left to right?
+
+```{r}
+
+
+
+chair_1 <- c(1,2,3,4,5)
+chair_2 <- c(2,3,4,5,1)
+chair_3 <- c(3,4,5,1,2)
+chair_4 <- c(4,5,1,2,3)
+chair_5 <- c(5,1,2,3,4)
+
+chairs <- data_frame(chair_1, chair_2, chair_3, chair_4, chair_5)
+
+chairs
+
+
+
+```
+
+Question 5.
+I roll six dice:
+
+what is the probability I see the numbers 6, 5, 4, 3, 2 and 1 in order on the dice, left to right?
+what is the probability I see one each of the numbers 6, 5, 4, 3, 2 and 1 on the dice regardless of order?
+
+```{r}
+six_dice <- rolldie(6)
+
+six_dice %>% 
+  isin(c(1,2,3,4,5,6), ordered = FALSE)
+```
+
+If I draw a single card from a 52-card deck, and it is black, what is the probability that its suit is spades?
+
+```{r}
+library(janitor)
+
+deck <- cards() %>% as.tibble()
+
+deck
+
+deck %>% 
+  mutate(black_red = case_when(
+    suit == "Club" ~ "black",
+    suit == "Spade" ~ "black",
+    TRUE ~ "red"
+  )) %>% 
+  filter(black_red == "black", suit == "Spade") %>% 
+  summarise(prob = n() / nrow(deck))
+```
+
