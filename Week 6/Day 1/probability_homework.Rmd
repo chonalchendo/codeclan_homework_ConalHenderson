@@ -44,6 +44,7 @@ If I roll a six-sided dice once, what is the probability of getting a number les
 
 ```{r}
 4/6
+2/3
 ```
 
 
@@ -106,6 +107,8 @@ six_dice <- rolldie(6)
 
 six_dice %>% 
   isin(c(1,2,3,4,5,6), ordered = FALSE)
+
+# wasnt too sure how to yse the isin() function 
 ```
 
 If I draw a single card from a 52-card deck, and it is black, what is the probability that its suit is spades?
@@ -125,5 +128,9 @@ deck %>%
   )) %>% 
   filter(black_red == "black", suit == "Spade") %>% 
   summarise(prob = n() / nrow(deck))
+
+# this equation explains if taken from entire deck 
+
+50/50 #if specific to the question 
 ```
 
