@@ -19,7 +19,8 @@ titanic
 titanic %>% 
   distinct(class)
 
-# Feel like it needs to be divided by the total passengers survived? 
+# Feel like it needs to be divided by the total passengers survived, not total 
+# number of passengers 
 
 titanic %>% 
   mutate(passenger_crew = if_else(class == c("3rd", "2nd", "1st"), "passenger", "crew")) %>% 
@@ -93,6 +94,8 @@ chairs <- data_frame(chair_1, chair_2, chair_3, chair_4, chair_5)
 chairs
 
 
+
+1/120
 
 ```
 
