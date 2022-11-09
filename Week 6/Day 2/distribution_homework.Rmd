@@ -46,10 +46,12 @@ samsung_rating_stats <- samsung %>%
     mean = mean(rating),
     sd = sd(rating)
   )
+
+samsung_rating_stats
 ```
 
 ```{r}
-phones %>% 
+samsung %>% 
   ggplot(aes(rating)) +
   geom_histogram(aes(y = ..density..), fill = "red", col = "red", bins = 30) +
   stat_function(
@@ -73,7 +75,7 @@ We can be more quantitative in comparing the distribution of top brand ratings w
 
 
 ```{r}
-phones %>% 
+samsung %>% 
   # within how many sd of mean is each value? 
   mutate(x_rating = scale(rating)) %>% 
   # return TRUE if it is within 1 else FALSE etc. 
@@ -87,4 +89,11 @@ phones %>%
     n_within_three = sum(within_three_sigma)/n()
     )
 ```
+
+Compare these proportions with those you expect for a normal distribution.
+
+The normal distribution expects 68.5% of data to be spread across 1 sd. In this
+data, we see that 79% is within the first sd. 
+
+
 
