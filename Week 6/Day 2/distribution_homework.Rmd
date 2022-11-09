@@ -1,0 +1,86 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(janitor)
+library(tidyverse)
+```
+
+
+
+Question 1.
+Load the data, clean_names() and explore it.
+
+```{r}
+phones <- read.csv("data/20190928-items.csv") %>% clean_names()
+```
+
+
+Question 2.
+Find the brand with the highest numbers of phones in the dataset.
+
+
+```{r}
+phones %>% 
+  group_by(brand) %>% 
+  summarise(total_phones = n()) %>% 
+  slice_max(total_phones)
+```
+
+Question 3.
+For your top brand, plot the distribution of phone ratings as a probability density, overlaying a fitted normal distribution. 
+
+```{r}
+samsung <- phones %>% 
+  filter(brand == "Samsung") %>% 
+  select(rating)
+
+samsung
+```
+
+```{r}
+samsung_rating_stats <- samsung %>% 
+  summarise(
+    mean = mean(rating),
+    sd = sd(rating)
+  )
+```
+
+```{r}
+phones %>% 
+  ggplot(aes(rating)) +
+  geom_histogram(aes(y = ..density..), fill = "red", col = "red", bins = 30) +
+  stat_function(
+    fun = dnorm,
+    args = list(
+      mean = samsung_rating_stats$mean,
+      sd = samsung_rating_stats$sd
+    ),
+    col = "steelblue",
+    size = 1.2
+    )
+```
+
+Do you think the normal distribution provides a good model of these ratings?
+
+Question 4.
+We can be more quantitative in comparing the distribution of top brand ratings with a normal distribution. You calculated the mean() and sd() of your distribution in an earlier question. Use these values to calculate the proportions of ratings within one-, two- and three standard deviations of the mean. Compare these proportions with those you expect for a normal distribution.
+
+
+```{r}
+phones %>% 
+  # within how many sd of mean is each value? 
+  mutate(x_rating = scale(rating)) %>% 
+  # return TRUE if it is within 1 else FALSE
+  mutate(within_one_sigma = if_else(abs(x_rating) <= 1, TRUE, FALSE),
+         within_two_sigma = if_else(abs(x_rating) <= 2, TRUE, FALSE),
+          within_three_sigma = if_else(abs(x_rating) <= 3, TRUE, FALSE)) %>% 
+  summarise(
+    n_within_one = sum(within_one_sigma)/n(),
+    n_within_two = sum(within_two_sigma)/n(),
+    n_within_three = sum(within_three_sigma)/n()
+    )
+```
+

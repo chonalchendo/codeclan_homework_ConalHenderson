@@ -23,10 +23,16 @@ titanic %>%
 # number of passengers 
 
 titanic %>% 
-  mutate(passenger_crew = if_else(class == c("3rd", "2nd", "1st"), "passenger", "crew")) %>% 
+  count(class)
+
+# this doesnt work 
+titanic %>% 
+  mutate(passenger_crew = if_else(class == c("deck crew", "engineering crew", "restaurant staff", "victualling crew"), "crew", "passenger")) %>% 
+  count(passenger_crew)
+  
   select(survived, passenger_crew) %>% 
-  filter(passenger_crew == "passenger", survived == "yes") %>% 
-  summarise(prob = n() / nrow(titanic))
+  group_by(passenger_crew) %>% 
+  summarise(sum(survived == "yes")/ n())
 
 
 ```
