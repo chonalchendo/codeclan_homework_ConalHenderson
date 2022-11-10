@@ -36,6 +36,8 @@ For your top brand, plot the distribution of phone ratings as a probability dens
 samsung <- phones %>% 
   filter(brand == "Samsung") %>% 
   select(rating)
+  #mutate(log_rating = log(rating)) %>% 
+  #filter(!log_rating == 0.0000000)
 
 samsung
 ```
@@ -68,7 +70,8 @@ samsung %>%
 Do you think the normal distribution provides a good model of these ratings?
 
 I think it does, it shows the spread of ratings with a nice 'bell-shaped' curve
-which will aid in future analysis. 
+which will aid in future analysis. Could transform ratings data to natural
+logarithms to create a more normal distribution. 
 
 Question 4.
 We can be more quantitative in comparing the distribution of top brand ratings with a normal distribution. You calculated the mean() and sd() of your distribution in an earlier question. Use these values to calculate the proportions of ratings within one-, two- and three standard deviations of the mean. Compare these proportions with those you expect for a normal distribution.
@@ -77,12 +80,14 @@ We can be more quantitative in comparing the distribution of top brand ratings w
 ```{r}
 samsung %>% 
   # within how many sd of mean is each value? 
+  # mutate(log_rating = log(rating)) %>% 
   mutate(x_rating = scale(rating)) %>% 
   # return TRUE if it is within 1 else FALSE etc. 
   mutate(within_one_sigma = if_else(abs(x_rating) <= 1, TRUE, FALSE),
          within_two_sigma = if_else(abs(x_rating) <= 2, TRUE, FALSE),
           within_three_sigma = if_else(abs(x_rating) <= 3, TRUE, FALSE)) %>%
   # return sum of sd rating within 1/2/3 sd divided by the number of obs
+  # basically looking for the percentage of ratings within 1/2/3 standard deviations 
   summarise(
     n_within_one = sum(within_one_sigma)/n(),
     n_within_two = sum(within_two_sigma)/n(),
