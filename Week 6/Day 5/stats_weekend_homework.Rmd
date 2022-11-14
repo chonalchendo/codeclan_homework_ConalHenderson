@@ -1,0 +1,254 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(infer)
+```
+
+# question 1 and 2
+
+H0: they do not differ
+H1: they differ
+
+H0: mean_sleep_total - mean_jabber_sleep == 0
+H1: mean_sleep_total - mean_jabber_sleep != 0 
+
+```{r}
+data(msleep)
+
+avg_sleep <- msleep %>% 
+  # find the mean of sleep_total for the sample population
+  summarise(mean_sleep_total = mean(sleep_total))
+
+avg_sleep
+
+# mean_sleep_total == 10.4
+# differs by 3.4 on average
+
+q1_null_distribution <- msleep %>% 
+  specify(response = sleep_total) %>% 
+  hypothesise(null = "point", mu = 7) %>% 
+  generate(type = "bootstrap", reps = 2000) %>% 
+  calculate(stat = "mean")
+
+q1_null_distribution %>% 
+  visualise(bins = 30)
+
+q1_null_distribution %>% 
+  visualise(bins = 30) +
+  shade_p_value(obs_stat = avg_sleep$avg_sleep_total,
+                direction = "both")
+
+q1_null_distribution %>% 
+  get_p_value(obs_stat = avg_sleep$avg_sleep_total,
+                direction = "both")
+
+```
+
+p-value is close to 0 which means we can reject the null hypothesis at the
+0.01 level of significance. 
+
+# question 3
+
+H0: Omnivores DO NOT sleep significantly longer than herbivores
+H1: Omnivores DO sleep significantly longer than herbivores
+
+HO: mean_omni_sleep - mean_herb_sleep == 0
+H1: mean_omni_sleep - mean_herb_sleep != 0
+
+```{r}
+
+msleep %>% 
+  filter(!is.na(vore)) %>% 
+  filter(vore == c("herbi", "omni")) %>% 
+  select(vore, sleep_total) %>% 
+  group_by(vore) %>% 
+  summarise(mean_sleep_vore = mean(sleep_total))
+
+# 10.93 - 9.51 = 1.42
+# there is a statistically significant difference 
+
+# need to add in level of significance and model the null hypothesis
+# question only says statistical test though
+
+
+
+
+```
+
+# question 4
+
+H0: prop_domesticated - 0.05 <= 0
+H1: prop_domesticated - 0.05 > 0 
+
+
+```{r}
+sleep_domesticated <- msleep %>% 
+  mutate(is_domesticated = if_else(conservation == "domesticated", 
+                                   "domesticated",
+                                   "not domesticated")) %>% 
+  filter(!is.na(is_domesticated))
+
+sleep_domesticated %>% 
+  summarise(prop_domesticated = sum(is_domesticated == TRUE) / n())
+
+# I added this in but don't think it was necessary 
+
+q_4_null_distribution <- sleep_domesticated %>% 
+  specify(response = is_domesticated,
+          success = "not domesticated") %>% 
+  hypothesise(null = "point", p = 0.05) %>% 
+  generate(reps = 1000, type = "draw") %>% 
+  calculate(stat = "prop")
+
+q_4_null_distribution %>% 
+  visualise(bins = 30)
+```
+
+## 1.2 Defining the hypothesis
+
+For the next few questions, write out: 
+
+- what kind of test would I use
+- H0 and H1 in both mathematical notation and in words
+- state the method to generate the null distribution
+
+defintions for generate function: 
+
+__bootstrap__ - sample is drawn from each replicate (can have thousands of different 
+samples from the same dataset - creates a more normal distriution)
+
+__permutation__ - each input (e.g. location == c(nice, corfu)) will be reassigned 
+randomly to unchanged price data because the our hypothesis dictates price should
+not depend on the location input. 
+
+__draw__ - value is sampled from theoretical distribution with a parameter p 
+specified in the hypothesise() function - only for testing on one proportion
+statistic. 
+
+
+# question 1. 
+
+
+test: proportion test
+
+H0: prop_survey - 0.4 <= 0
+H1: prop_survey - 0.4 > 0 
+
+H0: The proportion of people who know about the shop in the town is LESS THAN 40
+percent
+
+H1: The proportion of people who know about the shop in the town is GREATER THAN
+OR EQUAL to 40 percent 
+
+generate(type = "draw") 
+
+
+# question 2: 
+
+test: proportion test
+
+
+H0: website users are LESS likely to click on the banner if positioned at the 
+top of the page
+
+H1: website users are MORE likely to click on the banner if positioned at the 
+top of the page
+
+H0: prop_top - prop_side <= 0 
+H1: prop_top - prop_side > 0 
+
+generate(type = "permute") 
+
+- website should be unaffected by position of the banner
+
+
+
+# question 3: 
+
+test: mean
+
+H0: The width of the sample data on parts DOES NOT differ significantly from 145mm
+H1: The width of the sample data on parts DOES differs significantly from 145mm
+
+
+H0: mean_diff_width == 0 
+H1: mean_diff_width != 0 
+
+
+generate(type = "bootstrap")
+
+
+## 1.3 - Interpreting results
+
+p-value > level of significance == DO NOT reject H0 
+
+p-value <= level of significance == DO reject H0 
+
+# question 1
+
+0.07 > 0.05 
+
+cannot reject the null hypothesis at the 0.05 level of significance
+
+
+# question 2
+
+0.006 <= 0.01 
+
+reject the null hypothesis at the 0.01 level of significance
+
+# question 3
+
+0.55 > 0.05
+
+cannot reject the null hypothesis at the 0.05 level of significance
+
+
+## Extension
+
+question 1
+
+```{r}
+transactions <- transactions %>% clean_names()
+```
+
+```{r}
+support_a <- transactions %>% 
+  summarise(support_a = sum(stock_code == 22469) / n())
+```
+
+question 2
+
+```{r}
+support_a_b <- transactions %>% 
+  summarise(support_a_b = (sum(stock_code == 22469) + sum(stock_code == 21110)) / n())
+```
+
+```{r}
+confidence_a_b <- support_a_b / support_a
+
+confidence_a_b
+```
+
+support_a_b == 1.13
+
+
+question 3
+
+```{r}
+support_b <- transactions %>% 
+  summarise(support_b = sum(stock_code == 21110) / n())
+
+```
+
+```{r}
+lift_a_b <- support_a_b / support_a * support_b
+
+lift_a_b
+```
+
