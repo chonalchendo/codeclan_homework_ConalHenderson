@@ -76,6 +76,21 @@ This suggests that the model is a good fit
 Task 5
 ##########
 
+diagnostic plot
+
+```{r}
+library(ggfortify)
+
+autoplot(lm1)
+```
+
+residual vs fitted - blue line stays close around 0 - independence of residuals
+
+Normal Q-Q - points are close to the dotted line indicating a normal distribution
+
+scale-location - checks constancy of variation - unsure if this graph is telling me 
+anything useful - want the blue line to stay close to a constant positive value...
+
 ```{r}
 tidy_output <- tidy(lm1)
 glance_output <- glance(lm1)
