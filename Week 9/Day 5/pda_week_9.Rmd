@@ -1,0 +1,167 @@
+---
+title: "R Notebook"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+##########
+load in libraries
+##########
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(lubridate)
+```
+
+#########
+load in data
+#########
+
+```{r}
+transaction <- read_csv("raw_data/toy_transactions.csv") 
+```
+
+############
+question 1
+############
+
+```{r}
+transaction <- transaction %>% 
+  unite("date", day:year, remove = TRUE) %>% 
+  mutate(date = dmy(date))
+```
+
+###########
+question 2
+###########
+
+```{r}
+toys <- read_csv("raw_data/toys.csv")
+```
+
+```{r}
+toys <- toys %>% 
+  mutate(weight = str_replace_all(weight, "g", ""),
+         weight = as.numeric(weight)) %>% 
+  separate(product, into = c("product_name", "product_title"), sep = "-")
+```
+
+```{r}
+quality <- read_csv("raw_data/quality.csv")
+```
+
+```{r}
+quality <- quality %>% 
+  mutate(description = str_replace_all(description, "Quality: ", ""),
+         description = case_when(
+           description == "Very Awesome" ~ "Very Good",
+           description == "Awesome" ~ "Good",
+           description == "Awful" ~ "Bad",
+           description == "Very Awful" ~ "Very Bad",
+           TRUE ~ description
+         ))
+```
+
+
+##########
+question 4
+##########
+
+```{r}
+customer_data <- "../Day 5/raw_data"
+
+fs::dir_ls(customer_data)
+
+csv_files <- fs::dir_ls(customer_data, regexp = "\\mers.csv$")
+
+```
+
+```{r}
+customers <- csv_files %>% 
+  map_dfr(read_csv)
+```
+
+##########
+question 5
+##########
+
+Impute missing values in numeric columns with the median value of customers with 
+the same gender and country. For example, a customer whose gender is female and 
+whose country is Australia with a missing age should get the median age of all 
+Australian females in the dataset.
+
+Hint: You can combine a group by() with mutate(across()) to apply coalesce across 
+columns which meet a logical criteria specified with where(). Also remember, in 
+across() we can define our own anonymous function like so ~ mean(.x, na.rm = TRUE) 
+where the .x represents what is being iterated on (when using across, this is the columns).
+
+```{r}
+customers <- customers %>% 
+  group_by(customer_country, customer_gender) %>% 
+  mutate(
+    across(where(is.numeric) & !id,
+           ~coalesce(.x, mean(.x, na.rm = TRUE)))) %>% 
+  ungroup()
+
+```
+
+
+```{r}
+transaction
+toys 
+quality
+customers
+```
+
+############
+question 7
+############
+
+# join all the datasets
+
+```{r}
+join_1 <- full_join(customers, transaction, by = c("id" = "customer_id")) 
+
+join_2 <- full_join(toys, quality, by = c("quality" = "id"))
+
+join_1
+join_2
+```
+
+```{r}
+toys_joined <- full_join(join_1, join_2, by = c("toy_id" = "id"))
+```
+
+
+##########
+question 8
+##########
+
+Ethical considerations are that there is a security threat given all data is now
+kept in the same place therefore if there was a security breach, all information
+on a customer would be easily accessible. 
+
+Customer names are available so can easily identify customers
+
+##########
+question 9
+##########
+
+```{r}
+new_toys_joined <- toys_joined %>% 
+  select(-first_name, -last_name)
+```
+
+############
+question 10
+############
+
+```{r}
+write_csv(new_toys_joined, "../Day 5/toys_joined.csv")
+
+```
+
+
+

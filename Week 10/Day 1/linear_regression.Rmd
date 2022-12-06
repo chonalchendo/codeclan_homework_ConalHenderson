@@ -1,0 +1,90 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#########
+load libraries
+#########
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(sjPlot)
+library(sjmisc)
+library(sjlabelled)
+library(broom)
+```
+
+#########
+load data
+#########
+
+```{r}
+prog_man <- read_csv("data/project_management.csv")
+prog_man
+```
+#########
+task 1
+#########
+
+```{r}
+prog_man %>% 
+  ggplot(aes(estimated_length, actual_length)) +
+  geom_point()
+```
+
+#########
+task 2
+#########
+
+```{r}
+prog_man %>% 
+  summarise(cor(estimated_length, actual_length))
+```
+strong positive correlation between estimated length and actual length.
+
+
+#########
+Task 3
+#########
+
+```{r}
+lm1 <- prog_man %>% 
+  lm(formula = actual_length ~ estimated_length)
+
+lm1
+```
+
+#########
+Task 4
+#########
+
+```{r}
+tab_model(lm1)
+```
+
+for every increase in estimated height by 1cm, corresponds with a 1.22cm increase
+in actual length on average
+
+R^2 - 0.647 
+
+This suggests that the model is a good fit
+
+
+##########
+Task 5
+##########
+
+```{r}
+tidy_output <- tidy(lm1)
+glance_output <- glance(lm1)
+
+tidy_output
+glance_output
+```
+
+p-value = <0.001
+
+there is a statistically significant relationship between the two and thus we 
+cannot reject the null hypothesis 

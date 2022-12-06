@@ -1,0 +1,550 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={R Notebook},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{R Notebook}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+load in libraries \#\#\#\#\#\#\#\#\#\#
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(tidyverse)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## -- Attaching packages --------------------------------------- tidyverse 1.3.2 --
+## v ggplot2 3.3.6      v purrr   0.3.5 
+## v tibble  3.1.8      v dplyr   1.0.10
+## v tidyr   1.2.1      v stringr 1.4.1 
+## v readr   2.1.3      v forcats 0.5.2 
+## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(janitor)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'janitor'
+## 
+## The following objects are masked from 'package:stats':
+## 
+##     chisq.test, fisher.test
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(lubridate)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'lubridate'
+## 
+## The following objects are masked from 'package:base':
+## 
+##     date, intersect, setdiff, union
+\end{verbatim}
+
+load in data \#\#\#\#\#\#\#\#\#
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{transaction }\OtherTok{\textless{}{-}} \FunctionTok{read\_csv}\NormalTok{(}\StringTok{"raw\_data/toy\_transactions.csv"}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Rows: 88 Columns: 6
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## dbl (6): transaction_id, toy_id, customer_id, day, month, year
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+\end{verbatim}
+
+question 1 \#\#\#\#\#\#\#\#\#\#\#\#
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{transaction }\OtherTok{\textless{}{-}}\NormalTok{ transaction }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{unite}\NormalTok{(}\StringTok{"date"}\NormalTok{, day}\SpecialCharTok{:}\NormalTok{year, }\AttributeTok{remove =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{date =} \FunctionTok{dmy}\NormalTok{(date))}
+\end{Highlighting}
+\end{Shaded}
+
+question 2 \#\#\#\#\#\#\#\#\#\#\#
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{toys }\OtherTok{\textless{}{-}} \FunctionTok{read\_csv}\NormalTok{(}\StringTok{"raw\_data/toys.csv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Rows: 46 Columns: 5
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr (3): quality, product, weight
+## dbl (2): id, price_euro
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{toys }\OtherTok{\textless{}{-}}\NormalTok{ toys }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{weight =} \FunctionTok{str\_replace\_all}\NormalTok{(weight, }\StringTok{"g"}\NormalTok{, }\StringTok{""}\NormalTok{),}
+         \AttributeTok{weight =} \FunctionTok{as.numeric}\NormalTok{(weight)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{separate}\NormalTok{(product, }\AttributeTok{into =} \FunctionTok{c}\NormalTok{(}\StringTok{"product\_name"}\NormalTok{, }\StringTok{"product\_title"}\NormalTok{), }\AttributeTok{sep =} \StringTok{"{-}"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Expected 2 pieces. Additional pieces discarded in 5 rows [2, 5, 10, 12,
+## 39].
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{quality }\OtherTok{\textless{}{-}} \FunctionTok{read\_csv}\NormalTok{(}\StringTok{"raw\_data/quality.csv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Rows: 5 Columns: 2
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr (2): id, description
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{quality }\OtherTok{\textless{}{-}}\NormalTok{ quality }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{description =} \FunctionTok{str\_replace\_all}\NormalTok{(description, }\StringTok{"Quality: "}\NormalTok{, }\StringTok{""}\NormalTok{),}
+         \AttributeTok{description =} \FunctionTok{case\_when}\NormalTok{(}
+\NormalTok{           description }\SpecialCharTok{==} \StringTok{"Very Awesome"} \SpecialCharTok{\textasciitilde{}} \StringTok{"Very Good"}\NormalTok{,}
+\NormalTok{           description }\SpecialCharTok{==} \StringTok{"Awesome"} \SpecialCharTok{\textasciitilde{}} \StringTok{"Good"}\NormalTok{,}
+\NormalTok{           description }\SpecialCharTok{==} \StringTok{"Awful"} \SpecialCharTok{\textasciitilde{}} \StringTok{"Bad"}\NormalTok{,}
+\NormalTok{           description }\SpecialCharTok{==} \StringTok{"Very Awful"} \SpecialCharTok{\textasciitilde{}} \StringTok{"Very Bad"}\NormalTok{,}
+           \ConstantTok{TRUE} \SpecialCharTok{\textasciitilde{}}\NormalTok{ description}
+\NormalTok{         ))}
+\end{Highlighting}
+\end{Shaded}
+
+question 4 \#\#\#\#\#\#\#\#\#\#
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{customer\_data }\OtherTok{\textless{}{-}} \StringTok{"../Day 5/raw\_data"}
+
+\NormalTok{fs}\SpecialCharTok{::}\FunctionTok{dir\_ls}\NormalTok{(customer\_data)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## ../Day 5/raw_data/australia_customers.csv
+## ../Day 5/raw_data/france_customers.csv
+## ../Day 5/raw_data/germany_customers.csv
+## ../Day 5/raw_data/new_zealand_customers.csv
+## ../Day 5/raw_data/quality.csv
+## ../Day 5/raw_data/spain_customers.csv
+## ../Day 5/raw_data/toy_transactions.csv
+## ../Day 5/raw_data/toys.csv
+## ../Day 5/raw_data/uk_customers.csv
+## ../Day 5/raw_data/usa_customers.csv
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{csv\_files }\OtherTok{\textless{}{-}}\NormalTok{ fs}\SpecialCharTok{::}\FunctionTok{dir\_ls}\NormalTok{(customer\_data, }\AttributeTok{regexp =} \StringTok{"}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{mers.csv$"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{customers }\OtherTok{\textless{}{-}}\NormalTok{ csv\_files }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{map\_dfr}\NormalTok{(read\_csv)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Rows: 7 Columns: 8
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr (4): customer_country, customer_gender, first_name, last_name
+## dbl (4): id, customer_age, customer_height_cm, customer_weight_kg
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+## Rows: 11 Columns: 8
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr (4): customer_country, customer_gender, first_name, last_name
+## dbl (4): id, customer_age, customer_height_cm, customer_weight_kg
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+## Rows: 5 Columns: 8
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr (4): customer_country, customer_gender, first_name, last_name
+## dbl (4): id, customer_age, customer_height_cm, customer_weight_kg
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+## Rows: 8 Columns: 8
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr (4): customer_country, customer_gender, first_name, last_name
+## dbl (4): id, customer_age, customer_height_cm, customer_weight_kg
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+## Rows: 9 Columns: 8
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr (4): customer_country, customer_gender, first_name, last_name
+## dbl (4): id, customer_age, customer_height_cm, customer_weight_kg
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+## Rows: 7 Columns: 8
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr (4): customer_country, customer_gender, first_name, last_name
+## dbl (4): id, customer_age, customer_height_cm, customer_weight_kg
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+## Rows: 11 Columns: 8
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr (4): customer_country, customer_gender, first_name, last_name
+## dbl (4): id, customer_age, customer_height_cm, customer_weight_kg
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+\end{verbatim}
+
+question 5 \#\#\#\#\#\#\#\#\#\#
+
+Impute missing values in numeric columns with the median value of
+customers with the same gender and country. For example, a customer
+whose gender is female and whose country is Australia with a missing age
+should get the median age of all Australian females in the dataset.
+
+Hint: You can combine a group by() with mutate(across()) to apply
+coalesce across columns which meet a logical criteria specified with
+where(). Also remember, in across() we can define our own anonymous
+function like so \textasciitilde{} mean(.x, na.rm = TRUE) where the .x
+represents what is being iterated on (when using across, this is the
+columns).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{customers }\OtherTok{\textless{}{-}}\NormalTok{ customers }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_by}\NormalTok{(customer\_country, customer\_gender) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{mutate}\NormalTok{(}
+    \FunctionTok{across}\NormalTok{(}\FunctionTok{where}\NormalTok{(is.numeric) }\SpecialCharTok{\&} \SpecialCharTok{!}\NormalTok{id,}
+           \SpecialCharTok{\textasciitilde{}}\FunctionTok{coalesce}\NormalTok{(.x, }\FunctionTok{mean}\NormalTok{(.x, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)))) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{ungroup}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{transaction}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 88 x 4
+##    transaction_id toy_id customer_id date      
+##             <dbl>  <dbl>       <dbl> <date>    
+##  1              1   1013          89 2016-10-16
+##  2              2    994          85 2020-09-08
+##  3              4   1018          18 2018-03-10
+##  4              5   1004          42 2018-04-17
+##  5              6   1014          31 2020-09-18
+##  6              7    993           6 2016-09-08
+##  7              8    995          71 2019-04-19
+##  8              9    995          61 2017-04-10
+##  9             10   1004          48 2020-06-23
+## 10             11   1007          17 2019-05-11
+## # ... with 78 more rows
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{toys }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 46 x 6
+##       id quality product_name          product_title         price_euro weight
+##    <dbl> <chr>   <chr>                 <chr>                      <dbl>  <dbl>
+##  1  1010 E       "Barbie "             " Summer Fun"               5     147. 
+##  2   896 C       "Yo"                  "yo "                       3.55  114. 
+##  3  1011 C       "Mr Potato Head "     " Jumbo Pack"               6.45  283. 
+##  4  1006 E       "My Little Pony "     " Figures collection"       7.55   95.8
+##  5   910 D       "Yo"                  "yo "                       2.5   114. 
+##  6   990 C       "Cabbage Patch Kids " " Ballerina Doll"         150     124. 
+##  7  1017 C       "Robot Dog "          " Batteries Included"      45     270. 
+##  8   994 B       "Robot Dog "          " Batteries Included"      50     270. 
+##  9   998 C       "Lego Set "           " Star Wars"               20.6   341. 
+## 10   854 A       "Yo"                  "yo "                       5.95  114. 
+## # ... with 36 more rows
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{quality}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 5 x 2
+##   id    description
+##   <chr> <chr>      
+## 1 A     Very Good  
+## 2 B     Good       
+## 3 C     OK         
+## 4 D     Bad        
+## 5 E     Very Bad
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{customers}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 58 x 8
+##       id customer_country customer_age custome~1 custo~2 custo~3 first~4 last_~5
+##    <dbl> <chr>                   <dbl>     <dbl>   <dbl> <chr>   <chr>   <chr>  
+##  1    61 Australia                19        169     79   Female  Linda   Lee    
+##  2    17 Australia                19        189     83   Female  Rebecca Morris 
+##  3    24 Australia                33        180     80   Male    Dennis  Price  
+##  4    67 Australia                19        170     60   Female  Christ~ Vasquez
+##  5    36 Australia                39.7      189     79   Male    Aaron   Brooks 
+##  6    83 Australia                50        170     75   Male    Jacob   Rivera 
+##  7    30 Australia                36        180.    66   Male    Brandon Roberts
+##  8    89 France                   29        180     67   Male    Michael Smith  
+##  9    85 France                   24.7      166     90   Female  Mary    Rodrig~
+## 10    18 France                   35        177     75.2 Female  Jennif~ Wilson 
+## # ... with 48 more rows, and abbreviated variable names 1: customer_height_cm,
+## #   2: customer_weight_kg, 3: customer_gender, 4: first_name, 5: last_name
+\end{verbatim}
+
+question 7 \#\#\#\#\#\#\#\#\#\#\#\#
+
+\hypertarget{join-all-the-datasets}{%
+\section{join all the datasets}\label{join-all-the-datasets}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{join\_1 }\OtherTok{\textless{}{-}} \FunctionTok{full\_join}\NormalTok{(customers, transaction, }\AttributeTok{by =} \FunctionTok{c}\NormalTok{(}\StringTok{"id"} \OtherTok{=} \StringTok{"customer\_id"}\NormalTok{)) }
+
+\NormalTok{join\_2 }\OtherTok{\textless{}{-}} \FunctionTok{full\_join}\NormalTok{(toys, quality, }\AttributeTok{by =} \FunctionTok{c}\NormalTok{(}\StringTok{"quality"} \OtherTok{=} \StringTok{"id"}\NormalTok{))}
+
+\NormalTok{join\_1}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 90 x 11
+##       id custom~1 custo~2 custo~3 custo~4 custo~5 first~6 last_~7 trans~8 toy_id
+##    <dbl> <chr>      <dbl>   <dbl>   <dbl> <chr>   <chr>   <chr>     <dbl>  <dbl>
+##  1    61 Austral~      19     169      79 Female  Linda   Lee           9    995
+##  2    61 Austral~      19     169      79 Female  Linda   Lee          38   1000
+##  3    61 Austral~      19     169      79 Female  Linda   Lee          56    996
+##  4    17 Austral~      19     189      83 Female  Rebecca Morris       11   1007
+##  5    17 Austral~      19     189      83 Female  Rebecca Morris       22   1003
+##  6    24 Austral~      33     180      80 Male    Dennis  Price        28    997
+##  7    67 Austral~      19     170      60 Female  Christ~ Vasquez      30   1012
+##  8    67 Austral~      19     170      60 Female  Christ~ Vasquez      49    983
+##  9    67 Austral~      19     170      60 Female  Christ~ Vasquez      54   1004
+## 10    67 Austral~      19     170      60 Female  Christ~ Vasquez      85   1009
+## # ... with 80 more rows, 1 more variable: date <date>, and abbreviated variable
+## #   names 1: customer_country, 2: customer_age, 3: customer_height_cm,
+## #   4: customer_weight_kg, 5: customer_gender, 6: first_name, 7: last_name,
+## #   8: transaction_id
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{join\_2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 46 x 7
+##       id quality product_name          product_title      price~1 weight descr~2
+##    <dbl> <chr>   <chr>                 <chr>                <dbl>  <dbl> <chr>  
+##  1  1010 E       "Barbie "             " Summer Fun"         5     147.  Very B~
+##  2   896 C       "Yo"                  "yo "                 3.55  114.  OK     
+##  3  1011 C       "Mr Potato Head "     " Jumbo Pack"         6.45  283.  OK     
+##  4  1006 E       "My Little Pony "     " Figures collect~    7.55   95.8 Very B~
+##  5   910 D       "Yo"                  "yo "                 2.5   114.  Bad    
+##  6   990 C       "Cabbage Patch Kids " " Ballerina Doll"   150     124.  OK     
+##  7  1017 C       "Robot Dog "          " Batteries Inclu~   45     270.  OK     
+##  8   994 B       "Robot Dog "          " Batteries Inclu~   50     270.  Good   
+##  9   998 C       "Lego Set "           " Star Wars"         20.6   341.  OK     
+## 10   854 A       "Yo"                  "yo "                 5.95  114.  Very G~
+## # ... with 36 more rows, and abbreviated variable names 1: price_euro,
+## #   2: description
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{toys\_joined }\OtherTok{\textless{}{-}} \FunctionTok{full\_join}\NormalTok{(join\_1, join\_2, }\AttributeTok{by =} \FunctionTok{c}\NormalTok{(}\StringTok{"toy\_id"} \OtherTok{=} \StringTok{"id"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+question 8 \#\#\#\#\#\#\#\#\#\#
+
+Ethical considerations are that there is a security threat given all
+data is now kept in the same place therefore if there was a security
+breach, all information on a customer would be easily accessible.
+
+Customer names are available so can easily identify customers
+
+question 9 \#\#\#\#\#\#\#\#\#\#
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{new\_toys\_joined }\OtherTok{\textless{}{-}}\NormalTok{ toys\_joined }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{select}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{first\_name, }\SpecialCharTok{{-}}\NormalTok{last\_name)}
+\end{Highlighting}
+\end{Shaded}
+
+question 10 \#\#\#\#\#\#\#\#\#\#\#\#
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{write\_csv}\NormalTok{(new\_toys\_joined, }\StringTok{"../Day 5/toys\_joined.csv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+
+\end{document}
