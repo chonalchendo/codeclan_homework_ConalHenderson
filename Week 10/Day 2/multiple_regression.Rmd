@@ -1,0 +1,201 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(fastDummies)
+library(GGally)
+library(ggfortify)
+library(mosaic)
+library(mosaicData)
+library(corrplot)
+```
+
+
+#########
+read in data
+#########
+
+```{r}
+housing_prices <- read_csv("data/housing_prices.csv")
+housing_prices
+```
+
+#########
+task 1
+#########
+
+```{r}
+ggpairs(housing_prices, columns = c("total_rooms", "total_bedrooms"))
+```
+
+they are strongly correlated with a correlation coefficient of 0.934
+
+########
+task 2
+########
+
+```{r}
+housing_prices <- housing_prices %>% 
+  select(-c(total_bedrooms))
+
+housing_prices <- housing_prices %>% 
+  select(-c(longitude, latitude))
+```
+
+
+#########
+task 3
+#########
+
+```{r message=FALSE}
+ggpairs(housing_prices)
+
+# correlation matrix doesnt work with boolean variable
+corrplot()
+
+```
+
+```{r}
+
+# plot housebolds ~ total rooms
+
+housing_prices %>% 
+  ggplot(aes(total_rooms, households)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+
+# households ~ population
+
+housing_prices %>% 
+  ggplot(aes(population, households)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+
+# population ~ total_rooms 
+
+housing_prices %>% 
+  ggplot(aes(total_rooms, population)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+
+# median_house_value ~ median_income
+
+housing_prices %>% 
+  ggplot(aes(median_income, median_house_value)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+
+```
+
+########
+task 4
+########
+
+```{r}
+housing_prices %>% 
+  distinct(ocean_proximity)
+
+housing_prices %>% 
+  fastDummies::dummy_cols(select_columns = "ocean_proximity",
+                          # avoid dummy variable trap
+                          remove_first_dummy = TRUE, 
+                          # remove original col
+                          remove_selected_columns = TRUE)
+  
+
+# 5 dummy variables expected, but will have to drop one to avoid multicollinearity
+```
+
+##########
+task 5
+##########
+
+```{r}
+# regress median_house_value ~ median_income
+
+lm1 <- lm(median_house_value ~ median_income, data = housing_prices)
+
+summary(lm1)
+
+par(mfrow = c(2,2))
+plot(lm1)
+```
+
+- residuals vs fitted - flat line indicates that there is a good random scattering
+therefore residuals are independent
+- normal q-q - line shows a fairly straight line indicating a normal distribution
+- scale-location - residuals appear fairly randomly spread which satisfies the 
+assumption of homoskedasticity
+- residuals vs leverage - cant see any cook's distance lines therefore the outlier
+cases are not influential 
+
+
+########
+task 6 
+########
+
+```{r}
+lm2 <- lm(median_house_value ~ median_income + housing_median_age, data = housing_prices)
+
+summary(lm2)
+
+par(mfrow = c(2,2))
+plot(lm2)
+```
+
+diagnostics fairly similar to before, better fit for assumption of homoskedasticity 
+
+```{r}
+lm2
+```
+
+results suggest a 1 unit increase in median_income is associated with a 42420
+increase in median_house_value on average 
+
+a 1 unit increase in housing_median_age is associated with a 1568 increase in 
+median_house_age on average
+
+
+##########
+Extension
+##########
+
+##########
+task 1
+##########
+
+
+
+```{r}
+lm3 <- lm(median_house_value ~ log(median_income) + housing_median_age + population + log(median_income):housing_median_age, data = housing_prices)
+
+autoplot(lm3)
+
+lm3
+```
+
+
+I would say the predicator is justified given that it would be expected that
+given a person's age, they are more likely to have a higher income -- having a 
+greater impact on the median housing price. 
+
+
+#########
+task 2 
+#########
+
+```{r}
+coplot(median_house_value ~ log(median_income) | housing_median_age,
+       rows = 1,
+       panel = function(x, y, ...) {
+         points(x, y)
+         abline(lm(y ~ x), col = 4)
+       },
+       housing_prices)
+```
+
+As age increases we see a greater correlation between median_housing_value ~ log(median_income)
