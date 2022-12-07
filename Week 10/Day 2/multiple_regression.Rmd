@@ -154,10 +154,10 @@ lm2
 ```
 
 results suggest a 1 unit increase in median_income is associated with a 42420
-increase in median_house_value on average 
+increase in median_house_value, holding all other factors constant.  
 
 a 1 unit increase in housing_median_age is associated with a 1568 increase in 
-median_house_age on average
+median_house_age, holding all other factors constant. 
 
 
 ##########
@@ -171,7 +171,8 @@ task 1
 
 
 ```{r}
-lm3 <- lm(median_house_value ~ log(median_income) + housing_median_age + population + log(median_income):housing_median_age, data = housing_prices)
+lm3 <- lm(median_house_value ~ log(median_income) + housing_median_age + 
+            population + log(median_income):housing_median_age, data = housing_prices)
 
 autoplot(lm3)
 
@@ -201,4 +202,16 @@ coplot(median_house_value ~ log(median_income) | housing_median_age,
        housing_prices)
 ```
 
-As age increases we see a greater correlation between median_housing_value ~ log(median_income)
+As age increases we see a greater correlation between median_house_value ~ log(median_income)
+gradient change is not that noticable
+
+
+
+```{r}
+lm4 <- lm(log(median_house_value) ~ log(median_income), data = housing_prices)
+
+autoplot(lm4)
+
+summary(lm4)
+```
+
