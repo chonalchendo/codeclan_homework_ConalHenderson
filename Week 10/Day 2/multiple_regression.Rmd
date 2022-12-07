@@ -183,6 +183,9 @@ I would say the predicator is justified given that it would be expected that
 given a person's age, they are more likely to have a higher income -- having a 
 greater impact on the median housing price. 
 
+should probably change median_house_value to natural logarithm to counter a 
+non-linear distribution for a more accurate model. 
+
 
 #########
 task 2 
