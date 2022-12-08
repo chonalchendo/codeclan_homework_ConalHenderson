@@ -292,3 +292,15 @@ summary(lm5)
 model suggests that waterfront (overlooking) has the greatest impact on price. 
 We can say that a one unit increase in waterfront is associated with a 7.455... 
 unit increase in price, holding all other factors constant 
+
+
+interaction: would probably choose, given bedrooms,
+what impact does sqft_living have on price? 
+
+```{r}
+lm6 <- lm(price ~ sqft_living + bedrooms + waterfront + yr_built + 
+            sqft_living:bedrooms, data = house_trim)
+
+summary(lm6)
+```
+
