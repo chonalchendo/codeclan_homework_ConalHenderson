@@ -1,0 +1,294 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+##########
+load in libraries
+##########
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(ggfortify)
+library(GGally)
+library(modelr)
+```
+
+
+##########
+load in data
+##########
+
+```{r}
+house <- read_csv("data/kc_house_data.csv")
+```
+
+#########
+task 1
+#########
+
+ You might like to think about removing some or all of `date`, `id`, 
+ `sqft_living15`, `sqft_lot15` and `zipcode` (`lat` and `long` provide a better 
+ measure of location in any event).
+* Have a think about how to treat `waterfront`. Should we convert its type?
+* We converted `yr_renovated` into a `renovated` logical variable, indicating 
+whether the property had ever been renovated. You may wish to do the same.
+* Have a think about how to treat `view`, `condition` and `grade`? Are they 
+interval or categorical ordinal data types?
+
+
+```{r}
+house_clean <- house %>% 
+  select(-c(date, id, sqft_living15, sqft_lot15, zipcode)) %>% 
+  mutate(renovated = if_else(yr_renovated == 0, 0, 1)) %>% 
+  select(-yr_renovated)
+
+```
+
+```{r}
+house_trim <- house_clean %>% 
+  mutate(grade_scale = case_when(
+    grade >= 11 ~ "High",
+    grade >= 8 ~ "Medium",
+    grade == 7 ~ "Average",
+    grade >= 4 ~ "Low",
+    TRUE ~ "Very Low"),
+    view_scale = case_when(
+      view == 0 ~ "no view",
+      view == 1 ~ "slight view",
+      view == 2 ~ "poor view",
+      view == 3 ~ "decent view",
+      view == 4 ~ "good view"),
+    condition_scale = case_when(
+      condition == 1 ~ "poor",
+      condition == 2 ~ "below average",
+      condition == 3 ~ "Average",
+      condition == 4 ~ "good", 
+      condition == 5 ~ "excellent"
+    )
+  ) %>% 
+  select(-c(view, condition, grade)) %>% 
+  # mutate(sqft_garden = sqft_lot - sqft_living)
+  mutate(bathrooms_per_bedroom = bathrooms / bedrooms) %>% 
+  select(-c(sqft_above, sqft_basement))
+
+house_trim <- house_trim %>% 
+  select(-bathrooms_per_bedroom) 
+
+house_trim <- house_trim %>% 
+  mutate(waterfront = if_else(waterfront == 0, "not overlooking", "overlooking"))
+
+```
+
+```{r}
+alias(lm(price ~ ., data = house_trim))
+
+house_trim
+```
+no alias so can continue with the model 
+
+
+#########
+task 3
+#########
+
+```{r}
+house_trim
+```
+
+
+```{r}
+lm1 <- lm(price ~ sqft_living, data = house_trim)
+
+summary(lm1)
+```
+
+signifcant coefficient
+
+R^2 suggests the model explains 49.3% of variance in explaining price
+
+```{r}
+autoplot(lm1)
+```
+
+- residuals vs fitted - indicates population sample is independent
+- normal q-q - skewed towards end of plot - suggests it plot is skewed 
+- scale-location - there is heteroskedasticity in the residuals indicated by positive 
+gradient and shape of the distribution of points 
+
+
+# second model 
+
+```{r}
+house_trim
+```
+
+
+```{r}
+lm2 <- lm(price ~ sqft_living + bedrooms, data = house_trim)
+
+summary(lm2)
+```
+
+```{r}
+house_resid <- house_trim %>% 
+  add_residuals(lm2) %>% 
+  select(-c(price, sqft_living, bedrooms))
+
+
+house_resid %>% 
+  select(resid, everything()) %>% 
+  ggpairs(aes(colour = waterfront, alpha = 0.5))
+
+```
+
+```{r}
+# house_trim_numeric <- house_trim %>%
+#   select_if(is.numeric)
+# 
+# house_trim_nonnumeric <- house_trim %>%
+#   select_if(function(x) !is.numeric(x))
+# 
+# house_trim_nonnumeric$price <- house_trim$price
+# 
+# ggpairs(house_trim_numeric)
+# ggpairs(house_trim_nonnumeric)
+```
+
+residuals check
+
+```{r}
+house_resid_numeric <- house_resid %>%
+  select_if(is.numeric)
+
+house_resid_nonnumeric <- house_resid %>%
+  select_if(function(x) !is.numeric(x))
+
+house_resid_nonnumeric$price <- house_trim$price
+
+ggpairs(house_resid_numeric)
+ggpairs(house_resid_nonnumeric)
+
+```
+
+
+## add categorical variable
+
+```{r}
+lm3 <- lm(price ~ sqft_living + bedrooms + waterfront, data = house_trim)
+
+summary(lm3)
+```
+
+# dont need to do this because waterfront is already statistically significant
+
+```{r}
+anova(lm2, lm3)
+```
+
+```{r}
+autoplot(lm3)
+```
+
+Not significant difference in any of the graphs but R^2 is better so variables 
+are aiding in explanation of variance in residuals
+
+
+residual check
+
+```{r}
+house_resid <- house_trim %>% 
+  add_residuals(lm3) %>% 
+  select(-c(price, sqft_living, bedrooms, waterfront))
+```
+
+
+```{r}
+house_resid_numeric <- house_resid %>%
+  select_if(is.numeric)
+
+house_resid_nonnumeric <- house_resid %>%
+  select_if(function(x) !is.numeric(x))
+
+house_resid_nonnumeric$price <- house_trim$price
+
+ggpairs(house_resid_numeric)
+ggpairs(house_resid_nonnumeric)
+```
+
+correlations of note 
+
+- lat and long 
+- yr_built 
+- view scale - looks relevant 
+
+- price needs a log transform - data is heavily skewed to the right
+
+```{r}
+lm4 <- lm(price ~ sqft_living + bedrooms + waterfront + view_scale, data = house_trim)
+
+summary(lm4)
+```
+
+```{r}
+anova(lm3,lm4)
+```
+
+```{r}
+autoplot(lm4)
+```
+
+# will perform log transformation 
+
+```{r}
+lm5 <- lm(log(price) ~ sqft_living + bedrooms + waterfront + view_scale, data = house_trim)
+
+summary(lm5)
+
+```
+
+reduces R^2 
+
+will remove view_scale and replace with yr_built
+
+```{r}
+lm5 <- lm(price ~ sqft_living + bedrooms + waterfront + yr_built, data = house_trim)
+
+summary(lm5)
+```
+
+```{r}
+# residuals 
+
+house_resid <- house_trim %>% 
+  add_residuals(lm3) %>% 
+  select(-c(price, sqft_living, bedrooms, waterfront))
+```
+
+
+```{r}
+house_resid_numeric <- house_resid %>%
+  select_if(is.numeric)
+
+house_resid_nonnumeric <- house_resid %>%
+  select_if(function(x) !is.numeric(x))
+
+house_resid_nonnumeric$price <- house_trim$price
+
+ggpairs(house_resid_numeric)
+ggpairs(house_resid_nonnumeric)
+
+```
+
+
+
+# extension 
+
+```{r}
+summary(lm5)
+```
+
+model suggests that waterfront (overlooking) has the greatest impact on price. 
+We can say that a one unit increase in waterfront is associated with a 7.455... 
+unit increase in price, holding all other factors constant 

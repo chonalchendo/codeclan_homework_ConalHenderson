@@ -15,6 +15,7 @@ library(corrplot)
 ```
 
 
+
 #########
 read in data
 #########
@@ -23,6 +24,107 @@ read in data
 housing_prices <- read_csv("data/housing_prices.csv")
 housing_prices
 ```
+
+
+Notes: 
+
+what does one row represent? An aggregate of a district in California
+
+some variables are row sums, some are "stats", like averages 
+--> do some feature engineering / variable transformation to get more "stats"
+that are meaningful to me about these houses
+
+Lets do some feature engineering
+- the data set we start with is the "raw material"
+- We can use those to make more meaning, aid interpretation
+
+
+```{r}
+house <- housing_prices %>% 
+  mutate(bedrooms_per_house = total_bedrooms / households, 
+         rooms_per_house = total_rooms / households,
+         people_per_house = population / households,
+         bedrooms_per_person = total_bedrooms / population, 
+         rooms_per_person = total_rooms / population,
+         bedrooms_per_room = total_bedrooms / total_rooms,
+         non_bedrooms_per_house = rooms_per_house - bedrooms_per_house)
+```
+
+```{r}
+skimr::skim(house)
+
+glimpse(house)
+```
+
+
+extra idea: start using long & lats to make more meaning 
+--> joining to external city coordinate data, creating labels, flags, or 
+things 
+
+```{r message=FALSE}
+
+ggpairs1 <- house %>% 
+  select(housing_median_age,median_income,median_house_value,ocean_proximity)
+  
+  
+ggpairs(ggpairs1)
+
+
+ggpairs2 <- house %>% 
+  select(median_house_value, total_rooms, rooms_per_house, total_bedrooms, bedrooms_per_house) 
+
+
+ggpairs(ggpairs2)
+
+
+ggpairs3 <- house %>% 
+  select(median_house_value,
+         households,
+         population,
+         people_per_house,
+         total_rooms,
+         rooms_per_house)
+
+ggpairs(ggpairs3)
+```
+
+
+household assumption - "Proxy" for being in an urban/city area
+
+```{r}
+house %>% 
+  select_if(is.numeric) %>% 
+  skimr::skim()
+
+  
+```
+
+```{r}
+library(raster)
+library(leaflet)
+
+raster <- rasterFromXYZ(housing_prices %>% 
+  dplyr::select(longitude, latitude, median_house_value), crs = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+
+pal <- colorNumeric(c("blue", "red", "yellow"), values(raster),
+  na.color = "transparent")
+
+leaflet() %>% 
+  addTiles() %>% 
+  addRasterImage(raster, colors = pal, opacity = 0.7) %>% 
+  addLegend(pal = pal, values = values(raster),
+    title = "Median House Value")
+```
+
+
+Log Transformations - truncates data - helps with skewed data
+
+```{r}
+ggplot(house, aes(log(median_income)))+ 
+  geom_histogram() +
+  theme_classic()
+```
+
 
 #########
 task 1
@@ -33,6 +135,10 @@ ggpairs(housing_prices, columns = c("total_rooms", "total_bedrooms"))
 ```
 
 they are strongly correlated with a correlation coefficient of 0.934
+
+linear distribution 
+
+very skewed to the right 
 
 ########
 task 2
@@ -207,11 +313,37 @@ gradient change is not that noticable
 
 
 
+
+# log - log transformation model 
+
 ```{r}
-lm4 <- lm(log(median_house_value) ~ log(median_income), data = housing_prices)
+lm4 <- lm(log(median_house_value) ~ log(median_income) + log(housing_median_age) 
+          + ocean_proximity, data = housing_prices)
 
 autoplot(lm4)
 
 summary(lm4)
+```
+
+
+visualise skew: 
+
+```{r}
+housing_prices %>% 
+  ggplot(aes(log(median_house_value))) +
+  geom_histogram()
+```
+
+
+```{r}
+library(leaflet)
+```
+
+```{r}
+housing_prices %>% 
+  leaflet() %>% 
+  addTiles() %>% 
+  addCircleMarkers(lng = ~longitude, lat = ~latitude,
+                  clusterOptions = markerClusterOptions(maxClusterRadius = 50))
 ```
 
