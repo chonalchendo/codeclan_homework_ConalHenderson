@@ -253,7 +253,12 @@ reduces R^2
 will remove view_scale and replace with yr_built
 
 ```{r}
-lm5 <- lm(price ~ sqft_living + bedrooms + waterfront + yr_built, data = house_trim)
+house_trim
+```
+
+
+```{r}
+lm5 <- lm(price ~ sqft_living + lat + view_scale + grade_scale, data = house_trim)
 
 summary(lm5)
 ```
@@ -294,13 +299,40 @@ We can say that a one unit increase in waterfront is associated with a 7.455...
 unit increase in price, holding all other factors constant 
 
 
-interaction: would probably choose, given bedrooms,
+interaction:would probably choose, given bedrooms,
 what impact does sqft_living have on price? 
 
 ```{r}
-lm6 <- lm(price ~ sqft_living + bedrooms + waterfront + yr_built + 
-            sqft_living:bedrooms, data = house_trim)
+lm6 <- lm(price ~ sqft_living + lat + view_scale + grade_scale +
+          lat:grade_scale, data = house_trim)
 
 summary(lm6)
+```
+R^2 - 0.66
+
+```{r}
+
+
+lm7 <- lm(price ~ sqft_living + lat + view_scale + grade_scale +
+          sqft_living:view_scale, data = house_trim)
+
+summary(lm7)
+```
+
+```{r}
+house_resid <- house_trim %>% 
+  add_residuals(lm7)
+
+
+coplot(resid ~ sqft_living | view_scale,
+       panel = function(x, y, ...){
+         points(x, y)
+         abline(lm(y ~ x), col = "blue")
+       },
+       data = house_resid, rows = 1)
+```
+
+```{r}
+autoplot(lm7)
 ```
 
