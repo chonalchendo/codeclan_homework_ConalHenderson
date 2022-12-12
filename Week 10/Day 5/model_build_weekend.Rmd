@@ -1,0 +1,429 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(mosaic)
+library(ggfortify)
+library(GGally)
+library(modelr)
+```
+
+
+
+```{r}
+avocado <- read_csv("data/avocado.csv") %>% clean_names()
+```
+
+
+```{r}
+avocado_clean <- avocado %>% 
+  select(-x1) %>% 
+  mutate(month = month(date)) %>% 
+  select(-date) %>% 
+  rename_with(~ sub("^x4", "code_4", .x), starts_with("x")) %>% 
+  mutate(type = as_factor(type),
+         year = as_factor(year),
+         region = as_factor(region),
+         month = as_factor(month)) 
+alias(lm(average_price ~ ., data = avocado_clean))
+```
+
+
+
+
+```{r message = FALSE}
+avocado_trim <- avocado_clean %>% 
+  mutate(code_other = total_volume - code_4046 - code_4225 - code_4770,
+         avocado_per_bag = total_volume / total_bags) %>% 
+  select(average_price:code_4770, code_other, everything()) %>% 
+  mutate(avocado_per_bag = coalesce(avocado_per_bag, mean(avocado_per_bag))) %>% 
+  fastDummies::dummy_cols(select_columns = "region", remove_first_dummy = TRUE, 
+                          remove_selected_columns = TRUE)
+
+
+avocado_trim
+
+
+
+# seperate into numeric and non-numeric 
+
+avocado_trim_numeric <- avocado_trim %>%
+  select_if(is.numeric)
+
+avocado_trim_nonnumeric <- avocado_trim %>%
+  select_if(function(x) !is.numeric(x))
+
+avocado_trim_nonnumeric$average_price <- avocado_trim$average_price
+
+ggpairs(avocado_trim_numeric)
+ggpairs(avocado_trim_nonnumeric)
+```
+```{r}
+all_model2 <- lm(log(average_price) ~ ., data = avocado_new)
+
+summary(all_model2)
+```
+
+
+
+```{r}
+model1 <- lm(average_price ~ code_4046, data = avocado_trim)
+
+summary(model1)
+```
+
+R^2 - model explains 4.3% of the variance in average price 
+
+interpretation
+
+A 1 unit increase in total avocados sold with the code 4046 is associated with a 
+-$6.63 drop in price on average
+
+
+## what do the diagnostic plots suggest?
+
+```{r}
+autoplot(model1)
+```
+
+graph 1 - sample population data is not independent 
+graph 2 - data is not normally distributed
+graph 3 - line shows graident - there is heteroskedasticity in the data set
+graph 4 - cannot see cook's lines - which is fine 
+
+
+# need to change dataframe as avocado per bag includes data that lm() wont accept 
+
+```{r}
+# set data to new dataframe
+avocado_new <- avocado_trim
+
+# take away NAN or Inf data and replace with NA
+avocado_new[is.na(avocado_new) | avocado_new == "Inf"] <- NA 
+
+# lm() accepts NA but not the other two 
+```
+
+
+
+# log transformation of average_price
+
+We can log transform average price to get a more normal distribution of the data
+
+```{r}
+model1 <- lm(log(average_price) ~ code_4046, data = avocado_new)
+
+summary(model1)
+```
+
+better R^2 (5% of variance explained) 
+
+# diagnostic plots
+
+```{r}
+autoplot(model1)
+```
+
+graph 1 - unchanged 
+graph 2 - more normal distribution - bell shaped curve
+graph 3 - unchanged 
+graph 4 - unchanged
+
+
+# check residuals of model against new variables
+
+```{r message=FALSE}
+residuals <- avocado_new %>% 
+  add_residuals(model1) %>% 
+  select(-c(average_price, code_4046))
+
+# seperate into numeric and non-numeric 
+
+avocado_resid_numeric <- residuals %>%
+  select_if(is.numeric)
+
+avocado_resid_nonnumeric <- residuals %>%
+  select_if(function(x) !is.numeric(x))
+
+avocado_resid_nonnumeric$average_price <- avocado_trim$average_price
+
+ggpairs(avocado_resid_numeric)
+ggpairs(avocado_resid_nonnumeric)
+
+```
+
+
+# model 2
+
+residuals suggest that avocado_per_bag is the highest correlated numeric factor 
+with average price. 
+
+However, the non-numeric graph indicates that the type is highly corrleated
+given the distribution of data and the boxplot graph
+
+will include type next
+
+```{r}
+model2 <- lm(log(average_price) ~ code_4046 + type, data = avocado_new)
+
+summary(model2)
+```
+
+
+we can see that type has dramatically increased the fit of our model, with the 
+R^2 explaining 38.8% of the variance in average price
+
+result interpretation: 
+
+An increase in typeorganic by 1 unit is associated with a change in average_price
+by 3.4%, holding all other factors constant. 
+
+
+# check assumptions hold
+
+```{r}
+autoplot(model2)
+```
+
+graph 1 - population seems to be indepedent - two distinct populatons likely due 
+to their being two distinct types
+graph 2 - population distribution seems less normal - may have to log transform
+graph 3 - less gradient meaning the conditional variance of residauls is constant
+--> homoskedasticity rather than hetero...
+
+
+# check anova to see if using type is good... 
+
+
+```{r}
+
+anova(model2, model1)
+```
+
+statiscally significant (already knew that) looks good to use (obviously) 
+
+
+
+# add new third variable 
+
+# check residuals
+
+
+```{r message = FALSE}
+residuals <- avocado_new %>% 
+  add_residuals(model2) %>% 
+  select(-c(average_price, code_4046, type))
+
+# seperate into numeric and non-numeric 
+
+avocado_resid_numeric <- residuals %>%
+  select_if(is.numeric)
+
+avocado_resid_nonnumeric <- residuals %>%
+  select_if(function(x) !is.numeric(x))
+
+avocado_resid_nonnumeric$average_price <- avocado_trim$average_price
+
+ggpairs(avocado_resid_numeric)
+ggpairs(avocado_resid_nonnumeric)
+```
+
+highest correlated numeric is large_bag but doesnt seem to be highly correlated 
+at all (0.064). 
+
+Month or year may be a good variable to use indicated by the box plots
+
+I would like to try and use the regionv variable which may take some coding to
+rearrange so that it can be useable. might have to change to binary columns. 
+
+
+# model 3
+
+
+```{r}
+model3 <- lm(log(average_price) ~ code_4046 + type + month, data = avocado_new)
+
+summary(model3)
+```
+
+should I use this variable?
+
+```{r}
+anova(model3, model2)
+```
+
+Yes. 
+
+
+```{r}
+autoplot(model3)
+```
+
+graph 1 - looks good for distribution, some very distinct population areas though
+missing some key bits of data from pop hence why R^2 is 45%
+
+graph 2 - still close to a normal distribution 
+
+graph 3 - looks good, homoskedastic!
+
+
+# check residuals before last variable add 
+
+```{r message = FALSE}
+residuals <- avocado_new %>% 
+  add_residuals(model2) %>% 
+  select(-c(average_price, code_4046, type, month))
+
+# seperate into numeric and non-numeric 
+
+avocado_resid_numeric <- residuals %>%
+  select_if(is.numeric)
+
+avocado_resid_nonnumeric <- residuals %>%
+  select_if(function(x) !is.numeric(x))
+
+avocado_resid_nonnumeric$average_price <- avocado_trim$average_price
+
+ggpairs(avocado_resid_numeric)
+ggpairs(avocado_resid_nonnumeric)
+```
+
+```{r}
+model4 <- lm(log(average_price) ~ code_4046 + type + month + x_large_bags, data = avocado_new)
+
+summary(model4)
+```
+
+this model doesnt really explain anymore so will use model 3 going forward
+
+
+# Interaction term 
+
+
+code_4046:type, code_4046:month, type:month
+
+```{r}
+model5a <- lm(log(average_price) ~ code_4046 + type + month + code_4046:type, data = avocado_new)
+
+summary(model5a)
+```
+
+check graph of interaction term
+
+```{r}
+avocado_resid <- avocado_new %>% 
+  add_residuals(model5a)
+
+
+coplot(resid ~ code_4046 | type,
+       panel = function(x, y, ...){
+         points(x, y)
+         abline(lm(y ~ x), col = "blue")
+       },
+       data = avocado_resid, rows = 1)
+```
+
+code_4046:type, code_4046:month, type:month
+
+```{r}
+model5b <- lm(log(average_price) ~ code_4046 + type + month + code_4046:month, data = avocado_new)
+
+summary(model5b)
+```
+
+
+```{r}
+avocado_resid <- avocado_new %>% 
+  add_residuals(model5b)
+
+
+coplot(resid ~ code_4046 | month,
+       panel = function(x, y, ...){
+         points(x, y)
+         abline(lm(y ~ x), col = "blue")
+       },
+       data = avocado_resid, rows = 1)
+```
+
+```{r}
+model5c <- lm(log(average_price) ~ code_4046 + type + month + type:month, data = avocado_new)
+
+summary(model5c)
+```
+
+```{r}
+avocado_resid <- avocado_new %>% 
+  add_residuals(model5c)
+
+
+coplot(resid ~ type | month,
+       panel = function(x, y, ...){
+         points(x, y)
+         abline(lm(y ~ x), col = "blue")
+       },
+       data = avocado_resid, rows = 1)
+```
+
+```{r}
+# all_model <- lm(log(average_price) ~ ., data = avocado_new)
+# 
+# summary(all_model)
+```
+
+
+test / train 
+
+
+quiz 
+
+1. I want to predict how well 6 year-olds are going to do in their final school 
+exams. Using the following variables am I likely under-fitting, fitting well or 
+over-fitting? Postcode, gender, reading level, score in maths test, date of 
+birth, family income
+
+most likely overfit - dont need postcode or date of birth
+
+
+
+2. If I have two models, one with an AIC score of 34,902 and the other with an AIC 
+score of 33,559 which model should I use?
+
+Use the latter model - want a lower AIC score 
+
+3. I have two models, the first with: r-squared: 0.44, adjusted r-squared: 0.43. 
+The second with: r-squared: 0.47, adjusted r-squared: 0.41. Which one should I 
+use?
+
+first one as adjusted R squared is higher which accounts for adding new variables, 
+penalises model for adding new ones that dont aid explanation of variance
+
+4. I have a model with the following errors: RMSE error on test set: 10.3, RMSE 
+error on training data: 10.4. Do you think this model is over-fitting?
+
+No, RMSE goes down for test set so probably well fit
+
+5. How does k-fold validation work?
+
+creates loads of samples of train test data and then averages the results of all
+ofall k-folds to say which is the best
+
+__could explain better__
+
+
+6. What is a validation set? When do you need one?
+
+
+
+7. Describe how backwards selection works.
+
+start with all the independent variables in the model and deselect which ever
+variable lowers the R^2 the most
+
+8. Describe how best subset selection works.
+
+rather than removing or adding a variable for good, this method searches all 
+possible combinations of variables to get the most efficient model

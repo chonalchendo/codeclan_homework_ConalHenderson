@@ -313,10 +313,13 @@ R^2 - 0.66
 ```{r}
 
 
-lm7 <- lm(price ~ sqft_living + lat + view_scale + grade_scale +
+lm7 <- lm(log(price) ~ sqft_living + lat + view_scale + grade_scale +
           sqft_living:view_scale, data = house_trim)
 
 summary(lm7)
+
+# are the view_scale values the right way around? a good view has a negative effect 
+# on price and no view has a positive relationship with price... surely makes no sense
 ```
 
 ```{r}
@@ -334,5 +337,35 @@ coplot(resid ~ sqft_living | view_scale,
 
 ```{r}
 autoplot(lm7)
+```
+
+
+```{r}
+# because I categorised some variables, lost some information so model doesn't
+# explain the variance as well as it could
+
+model <- lm(log(price) ~ ., data = house_trim)
+
+summary(model)
+```
+
+```{r}
+houses_tidy <- house %>%
+  select(-c("id", "date", "sqft_living15", "sqft_lot15", "zipcode")) %>%
+  mutate(waterfront = as.logical(waterfront)) %>%
+  mutate(renovated = yr_renovated != 0) %>%
+  select(-"yr_renovated") %>%
+  mutate(view = as_factor(view)) %>% 
+  mutate(condition = as_factor(condition)) %>%
+  mutate(grade = as_factor(grade))
+```
+
+```{r}
+# explains 0.015 (1.5%) more variance when I change back categorical variables
+
+lm8 <- lm(log(price) ~ sqft_living + lat + view + grade +
+          sqft_living:view, data = houses_tidy)
+
+summary(lm8)
 ```
 
