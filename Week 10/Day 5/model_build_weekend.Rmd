@@ -1,4 +1,4 @@
----
+---e
 title: "R Notebook"
 output: html_notebook
 ---
@@ -40,10 +40,7 @@ avocado_trim <- avocado_clean %>%
   mutate(code_other = total_volume - code_4046 - code_4225 - code_4770,
          avocado_per_bag = total_volume / total_bags) %>% 
   select(average_price:code_4770, code_other, everything()) %>% 
-  mutate(avocado_per_bag = coalesce(avocado_per_bag, mean(avocado_per_bag))) %>% 
-  fastDummies::dummy_cols(select_columns = "region", remove_first_dummy = TRUE, 
-                          remove_selected_columns = TRUE)
-
+  mutate(avocado_per_bag = coalesce(avocado_per_bag, mean(avocado_per_bag)))
 
 avocado_trim
 
@@ -301,13 +298,32 @@ summary(model4)
 this model doesnt really explain anymore so will use model 3 going forward
 
 
+## add region 
+
+convert region to factor 
+
+```{r}
+avocado_new <- avocado_new %>% 
+  mutate(region = as_factor(region))
+
+avocado_new
+```
+
+```{r}
+model4a <- lm(log(average_price) ~ code_4046 + type + month + region, data = avocado_new)
+
+summary(model4a)
+```
+
+this explains more when converting region to factor
+
 # Interaction term 
 
 
-code_4046:type, code_4046:month, type:month
+code_4046:type, code_4046:month, code_4046:region, type:month, type:region, month:region
 
 ```{r}
-model5a <- lm(log(average_price) ~ code_4046 + type + month + code_4046:type, data = avocado_new)
+model5a <- lm(log(average_price) ~ code_4046 + type + month + region + code_4046:type, data = avocado_new)
 
 summary(model5a)
 ```
@@ -372,6 +388,34 @@ coplot(resid ~ type | month,
 # all_model <- lm(log(average_price) ~ ., data = avocado_new)
 # 
 # summary(all_model)
+```
+
+
+```{r}
+model5d <- lm(log(average_price) ~ code_4046 + type + month + region + type:region, data = avocado_new)
+
+summary(model5d)
+```
+
+explains 66.5% of the variance in average price
+
+```{r}
+avocado_resid <- avocado_new %>% 
+  add_residuals(model5d)
+
+
+coplot(resid ~ region | type,
+       panel = function(x, y, ...){
+         points(x, y)
+         abline(lm(y ~ x), col = "blue")
+       },
+       data = avocado_resid, rows = 1)
+```
+
+
+
+```{r}
+autoplot(model5d)
 ```
 
 
