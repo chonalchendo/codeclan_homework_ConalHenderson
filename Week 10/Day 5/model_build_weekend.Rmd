@@ -416,7 +416,10 @@ __could explain better__
 
 6. What is a validation set? When do you need one?
 
-
+used as a final step to check the accuracy of model, the data in a validation set
+is neither used in the train or test set. Used to check if a model has been 
+overfitted or not, want the model to generalise to multiple problems rather than 
+one specific data set
 
 7. Describe how backwards selection works.
 
