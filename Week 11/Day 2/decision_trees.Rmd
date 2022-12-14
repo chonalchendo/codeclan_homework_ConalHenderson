@@ -1,0 +1,175 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+```{r}
+titanic_data <- read_csv("data/titanic_decision_tree_data.csv") %>% clean_names()
+```
+
+```{r}
+library(rpart)
+library(rpart.plot)
+
+shuffle_index <- sample(1:nrow(titanic_data))
+
+# shuffle the data so class order isn't in order - need this for training/testing split later on 
+titanic_set <- titanic_data[shuffle_index, ]
+```
+
+
+Take only observations which have a survived flag (i.e. that aren’t missing)
+Turn your important variables into factors (sex, survived, pclass, embarkation)
+Create an age_status variable which groups individuals under (and including) 
+16 years of age into a category called “child” category and those over 16 into 
+a category called “adult”.
+Drop the NA
+Drop any variables you don’t need (X1, passenger_id, name, ticket, far, cabin)
+
+```{r}
+titanic_set
+
+titanic_set <-  titanic_set %>%
+  filter(!is.na(survived)) %>% 
+  mutate(across(.cols = c(sex, survived, pclass, embarked), 
+                .fns = as_factor)) %>% 
+  mutate(age_status = as_factor(if_else(age > 16, "adult", "child"))) %>% 
+  select(-c(x1, passenger_id, name, ticket, fare, cabin)) %>% 
+  drop_na()
+
+titanic_set <- titanic_set %>% 
+  mutate(survived = if_else(survived == 0, "No", "Yes"),
+         pclass = case_when(
+           pclass == 1 ~ "Upper",
+           pclass == 2 ~ "Middle",
+           pclass == 3 ~ "Lower"
+         ))
+
+titanic_set <- titanic_set %>% 
+  select(survived, everything())
+
+titanic_set %>% 
+  mutate(survived = as_factor(survived))
+  
+```
+
+```{r}
+glimpse(titanic_set)
+```
+
+```{r}
+library(GGally)
+
+titanic_set %>% 
+  ggpairs()
+```
+
+class, age , age status?
+
+
+```{r}
+# get how many rows we have in total to work out the percentage
+n_data <- nrow(titanic_set)
+
+# create a test sample index
+test_index <- sample(1:n_data, size = n_data*0.2)
+
+# create test set
+titanic_test  <- slice(titanic_set, test_index)
+
+# create training set
+titanic_train <- slice(titanic_set, -test_index)
+```
+
+
+# check the amount of people that survived and who didnt survive for train/test
+
+```{r}
+titanic_test %>%
+ janitor::tabyl(survived)
+
+titanic_train %>% 
+  janitor::tabyl(survived)
+```
+
+```{r}
+titanic_fit <- rpart(
+  formula = survived ~ ., 
+  data = titanic_train, 
+  method = 'class'
+)
+
+rpart.plot(titanic_fit, 
+           yesno = 2, 
+           fallen.leaves = TRUE, 
+           faclen = 6, 
+           digits = 4)
+```
+
+
+important variables:
+
+- sex 
+- pclass
+- sib_sp
+
+```{r}
+rpart.rules(titanic_fit, cover = TRUE)
+```
+
+female in the upper or middle class has the highest chance of surviving
+
+female in the lower class has the lowest chance of surviving
+
+
+```{r}
+library(modelr)
+
+# add the predictions
+titanic_test_pred <- titanic_test %>%
+  add_predictions(titanic_fit, type = 'class')
+
+titanic_test_pred <- titanic_test_pred %>% 
+  mutate(survived = as_factor(survived))
+```
+
+```{r}
+library(yardstick)
+
+conf_mat <- titanic_test_pred %>%
+              conf_mat(truth = survived, estimate = pred)
+
+conf_mat
+
+```
+
+```{r}
+accuracy <- titanic_test_pred %>%
+ accuracy(truth = survived, estimate = pred)
+
+accuracy 
+```
+
+
+```{r}
+thrones_titanic_pred %>%
+  sensitivity(truth = survived, estimate = pred)
+```
+
+
+```{r}
+thrones_titanic_pred %>%
+  specificity(truth = survived, estimate = pred)
+```
+
+```{r}
+library(caret)
+
+confusionMatrix(thrones_titanic_pred$pred, thrones_titanic_pred$dth_survived)
+```
+

@@ -59,6 +59,8 @@ avocado_trim_nonnumeric$average_price <- avocado_trim$average_price
 ggpairs(avocado_trim_numeric)
 ggpairs(avocado_trim_nonnumeric)
 ```
+
+
 ```{r}
 all_model2 <- lm(log(average_price) ~ ., data = avocado_new)
 
@@ -366,7 +368,8 @@ coplot(resid ~ code_4046 | month,
 ```
 
 ```{r}
-model5c <- lm(log(average_price) ~ code_4046 + type + month + type:month, data = avocado_new)
+model5c <- lm(log(average_price) ~ code_4046 + type + month + 
+                type:month, data = avocado_new)
 
 summary(model5c)
 ```
@@ -392,7 +395,8 @@ coplot(resid ~ type | month,
 
 
 ```{r}
-model5d <- lm(log(average_price) ~ code_4046 + type + month + region + type:region, data = avocado_new)
+model5d <- lm(log(average_price) ~ code_4046 + type + month + region + 
+                type:region, data = avocado_new)
 
 summary(model5d)
 ```
