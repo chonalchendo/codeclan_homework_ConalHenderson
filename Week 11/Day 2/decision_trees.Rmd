@@ -116,7 +116,18 @@ important variables:
 
 - sex 
 - pclass
-- sib_sp
+- sib_sp (changed so now not important)
+
+highest chance of surviving: 
+
+- people who are not male and not lower class 
+
+lowest chance of surviving: 
+
+- people who are male, lower or middle class, and greater than or equal to 
+3.5 years old 
+
+40.18% of people survived (probability)
 
 ```{r}
 rpart.rules(titanic_fit, cover = TRUE)
@@ -171,5 +182,29 @@ titanic_test_pred %>%
 library(caret)
 
 confusionMatrix(titanic_test_pred$pred, titanic_test_pred$survived)
+```
+
+
+##########
+random forest
+##########
+
+
+```{r}
+library(ranger)
+
+# need to change survived to factor... again 
+titanic_train <- titanic_train %>% 
+  mutate(survived = as_factor(survived))
+
+rf_classifier <- ranger(survived ~ ., 
+                        data = titanic_train, 
+                        importance = "impurity", 
+                        num.trees = 1000, 
+                        mtry = 2, 
+                        min.node.size = 5)
+
+rf_classifier
+
 ```
 
