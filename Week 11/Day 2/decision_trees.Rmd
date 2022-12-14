@@ -157,19 +157,19 @@ accuracy
 
 
 ```{r}
-thrones_titanic_pred %>%
+titanic_test_pred %>%
   sensitivity(truth = survived, estimate = pred)
 ```
 
 
 ```{r}
-thrones_titanic_pred %>%
+titanic_test_pred %>%
   specificity(truth = survived, estimate = pred)
 ```
 
 ```{r}
 library(caret)
 
-confusionMatrix(thrones_titanic_pred$pred, thrones_titanic_pred$dth_survived)
+confusionMatrix(titanic_test_pred$pred, titanic_test_pred$survived)
 ```
 
