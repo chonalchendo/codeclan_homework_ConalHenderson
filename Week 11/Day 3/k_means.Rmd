@@ -1,0 +1,177 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#######
+load libraries
+#######
+
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+########
+load in data
+########
+
+```{r}
+customers <- read_csv("data/mall_customers.csv") %>% clean_names()
+```
+
+
+You have been provided some customer data from a shopping centre. 
+Do some exploratory analysis on the data. Comment on findings.
+
+```{r}
+# avg income per gender
+customers %>% 
+  group_by(gender) %>% 
+  summarise(avg_income = mean(annual_income_k))
+```
+
+```{r}
+# avg income for each age
+customers %>% 
+  group_by(age) %>% 
+  summarise(avg_income = mean(annual_income_k)) %>% 
+  ggplot(aes(age, avg_income)) + 
+  geom_col() +
+  theme_classic()
+```
+
+```{r}
+customers
+```
+
+
+We are interested in creating a marketing campaign to target customers based 
+on their spending score and annual income. Perform a k-means clustering to find 
+if there are meaningful clusters in the data to target the customers.
+
+```{r}
+# visualise two variables
+
+customers %>% 
+  ggplot(aes(annual_income_k, spending_score_1_100)) + 
+  geom_point()
+```
+looks like some crazy data 
+
+```{r}
+customers_subset <- customers %>% 
+  select(annual_income_k, spending_score_1_100) %>% 
+  mutate(across(everything(), scale))
+```
+
+```{r}
+cluster <- kmeans(customers_subset,
+       centers = 4, # number of clusters
+       nstart = 25) 
+```
+
+
+```{r}
+library(factoextra)
+```
+
+first method: __Elbow Method__
+
+```{r}
+fviz_nbclust(customers_subset,
+             kmeans,
+             method = "wss",
+             nstart = 25)
+```
+
+If the line is an arm, where is the elbow? Maybe at k = 2 or k = 3?
+
+
+Method 2 - __Silhouette Coefficient__ 
+
+```{r}
+fviz_nbclust(customers_subset,
+             kmeans,
+             method = "silhouette",
+             nstart = 25)
+```
+
+average distance between clusters. Higher means clusters are more distinct.
+
+More evidence k = 2 is the optimal number of clusters 
+
+method 3 - __Gap statistic__
+
+```{r}
+fviz_nbclust(customers_subset,
+             kmeans,
+             method = "gap",
+             nstart = 25)
+```
+
+
+# create the cluster 
+
+```{r}
+library(broom)
+
+# look at tidy output (centres)
+
+tidy(cluster)
+
+augment(cluster, customers_subset)
+
+glance(cluster)
+
+
+```
+
+
+
+```{r}
+# customers_subet is the scaled data set
+# need to create a data set with the two variables I want 
+
+customers_two_var <- customers %>% 
+  select(annual_income_k, spending_score_1_100)
+
+k_clusters <- tibble(k = 1:20) %>% 
+  mutate(
+    kclust = map(k, ~kmeans(x = customers_subset, centers = .x, nstart = 25)),
+    tidied = map(kclust, tidy),
+    glanced = map(kclust, glance),
+    augmented = map(kclust, ~augment(.x, customers_two_var))
+  )
+
+k_clusters
+```
+
+
+```{r}
+customers_subset
+
+k_clusters %>% 
+  unnest(augmented) %>% # explode column
+  filter(k == 5) %>% # filter for optimal K 
+  ggplot(aes(annual_income_k, spending_score_1_100, colour = .cluster, shape = .cluster)) +
+  geom_point(size = 3) +
+  theme_classic()
+```
+5 clusters seems like a good fit for the data, silhouette method recommended 5
+
+data seems like a good fit for clustering, 5 distinct groups easily binned
+
+labels: 
+
+bottom left - low income / low spending score (fiscally responsible)
+bottom right - high income / low spending score (savers)
+centre - medium income / medium spending score
+top left - low income / high spending score (irresponsible spenders)
+top right - high income / high spenders 
+
+
+
+Comment on the attributes on one or two of the clusters (maybe even give them a label if you like - like in section 4.1 of the ‘Segmentation & clustering intro’ lesson).
+
+
