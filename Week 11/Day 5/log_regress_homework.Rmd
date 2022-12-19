@@ -1,0 +1,150 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#########
+load libraries
+#########
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(GGally)
+library(modelr)
+```
+
+#########
+load in data
+#########
+
+```{r}
+orange_df <- read_csv("data/orange_juice.csv") %>% clean_names()
+```
+
+##########
+clean/wrangle data
+##########
+
+```{r}
+orange_clean <- orange_df %>% 
+  # change purchase to logical variable
+  mutate(purchase_mm = if_else(purchase == "MM", "YES", "NO")) %>% 
+  # deselect original purchase variable
+  select(-purchase) %>% 
+  # rearrange data set 
+  select(purchase_mm, everything()) %>% 
+  # restructure weekof_purchase into five 10 week brackets
+  mutate(weekof_purchase = case_when(
+    weekof_purchase < 238 ~ "Week 227 - 237",
+    weekof_purchase < 249 ~ "Week 238 - 248", 
+    weekof_purchase < 260 ~ "Week 249 - 259",
+    weekof_purchase < 271 ~ "Week 260 - 270", 
+    TRUE ~ "Week 271 - 278"
+  )) %>% 
+  # saw that store 7 was store 0 in store so made the change in store var
+  mutate(store = if_else(store == 0, 7, store)) %>% 
+  # de select store_id, store 7 
+  select(-c(store_id, store7)) %>% 
+  # change two special columns to logical character vectors
+  mutate(special_ch = if_else(special_ch == 0, "NO", "YES"),
+         special_mm = if_else(special_mm == 0, "NO", "YES")) %>% 
+  # make all character vectors a factor 
+   mutate(across(is.character,
+                as_factor)) %>% 
+  # change store to factor variable
+  mutate(store = as_factor(store))
+```
+
+
+# check alias function
+
+```{r}
+alias(purchase_mm ~ ., data = orange_new)
+
+# need to take out sale price variables
+
+orange_new <- orange_clean %>% 
+  select(-c(sale_price_mm, sale_price_ch, price_diff, list_price_diff))
+
+
+# there is now no alias
+```
+# check the relationships using ggpairs()
+
+```{r message=FALSE}
+
+orange_new %>% 
+  ggpairs()
+
+
+orange_new %>% 
+  distinct(price_mm)
+```
+
+
+# single variable model
+
+```{r}
+model_1 <- glm(purchase_mm ~ price_mm,
+               family = binomial(link = "logit"),
+               data = orange_new
+               )
+
+summary(model_1)
+```
+
+
+```{r}
+pred_1 <- orange_new %>% 
+  add_predictions(model_1,
+                  type = "response")
+```
+
+
+# roc curves
+
+
+```{r}
+library(pROC)
+
+roc_pred_1 <- pred_1 %>% 
+  roc(response = purchase_mm,
+      predictor = pred)
+
+roc_curve_1 <- roc_pred_1 %>% 
+  ggroc(legacy.axes =  TRUE) +
+  coord_fixed() 
+
+
+roc_curve_1
+
+auc(roc_pred_1)
+
+# auc not that great, need more predictors 
+```
+
+
+# cross validation 
+
+```{r}
+library(caret)
+
+cv_train_control_1 <- trainControl(method = "repeatedcv", 
+                              number = 5,
+                              repeats = 100,
+                              savePredictions = TRUE, 
+                              classProbs = TRUE, 
+                              summaryFunction = twoClassSummary)
+
+cv_model_1 <- train(purchase_mm ~ price_mm,
+               data = orange_new,
+               trControl = cv_train_control_1,
+               method = "glm",
+               family = binomial(link = 'logit'))
+
+summary(model_1)
+
+cv_model_1$result
+```
+

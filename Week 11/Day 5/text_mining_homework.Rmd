@@ -1,0 +1,111 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#########
+load in libraries
+#########
+
+```{r}
+library(tidyverse)
+library(tidytext)
+library(janeaustenr)
+```
+
+#########
+load in dataset
+#########
+
+```{r}
+books <- austen_books()
+```
+
+```{r}
+# transform to get all the words
+word_books <- books %>% 
+  unnest_tokens(word, text)
+```
+
+```{r}
+# find the most common words in PP and SS
+
+word_books %>% 
+  filter(book %in% c("Sense & Sensibility", "Pride & Prejudice")) %>% 
+  group_by(book) %>% 
+  count(word, sort = TRUE) %>% 
+  slice(1)
+  
+```
+
+```{r}
+# find the most common non-stop word in PP and SS
+
+# create df with no stop words
+no_stop_words <- word_books %>% 
+  anti_join(stop_words)
+
+# find most common words 
+no_stop_words %>% 
+  filter(book %in% c("Sense & Sensibility", "Pride & Prejudice")) %>% 
+  group_by(book) %>% 
+  count(word, sort = TRUE) %>% 
+  slice(1)
+```
+
+```{r}
+# Find the most common sentiment words
+
+no_stop_words %>% 
+  inner_join(get_sentiments("nrc")) %>% 
+  filter(book %in% c("Sense & Sensibility", "Pride & Prejudice")) %>%
+  group_by(book) %>% 
+  count(sentiment, sort = TRUE) %>% 
+  slice_max(sentiment)
+  
+```
+
+#########
+plots
+#########
+
+```{r}
+# find the most common words in PP and SS
+
+word_books %>% 
+  filter(book %in% c("Sense & Sensibility", "Pride & Prejudice")) %>% 
+  group_by(book) %>% 
+  count(word, sort = TRUE) %>% 
+  slice(1) %>% 
+  ggplot(aes(word, n, fill = book)) + 
+  geom_col() + 
+  theme_classic()
+  
+
+
+```
+
+```{r}
+# find most common words 
+no_stop_words %>% 
+  filter(book %in% c("Sense & Sensibility", "Pride & Prejudice")) %>% 
+  group_by(book) %>% 
+  count(word, sort = TRUE) %>% 
+  slice(1) %>% 
+  ggplot(aes(word, n, fill = book)) +
+  geom_col() + 
+  theme_classic()
+```
+
+```{r}
+no_stop_words %>% 
+  inner_join(get_sentiments("nrc")) %>% 
+  filter(book %in% c("Sense & Sensibility", "Pride & Prejudice")) %>%
+  group_by(book) %>% 
+  count(sentiment, sort = TRUE) %>% 
+  slice_max(sentiment) %>% 
+  ggplot(aes(sentiment, n, fill = book)) + 
+  geom_col(position = "dodge") + 
+  theme_classic()
+```
+
