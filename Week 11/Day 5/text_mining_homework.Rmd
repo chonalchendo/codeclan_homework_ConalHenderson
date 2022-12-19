@@ -57,11 +57,11 @@ no_stop_words %>%
 # Find the most common sentiment words
 
 no_stop_words %>% 
-  inner_join(get_sentiments("nrc")) %>% 
+  inner_join(get_sentiments("bing")) %>% 
   filter(book %in% c("Sense & Sensibility", "Pride & Prejudice")) %>%
-  group_by(book) %>% 
+  group_by(word, book) %>% 
   count(sentiment, sort = TRUE) %>% 
-  slice_max(sentiment)
+  arrange(desc(n))
   
 ```
 
