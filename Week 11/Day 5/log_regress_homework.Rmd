@@ -83,6 +83,21 @@ orange_new %>%
 ```
 
 
+# regression curve plot 
+
+```{r}
+orange_new %>% 
+  ggplot() +
+  geom_jitter(aes(x = price_mm, y = as.integer(purchase_mm)), shape = 1, 
+              position = position_jitter(h = 0.03)) + 
+   geom_line(data = pred_1, aes(x = price_mm , y = pred), col = 'red') + 
+  ylab("Probability")
+
+# doesnt look good
+
+```
+
+
 # single variable model
 
 ```{r}
@@ -99,6 +114,8 @@ summary(model_1)
 pred_1 <- orange_new %>% 
   add_predictions(model_1,
                   type = "response")
+
+pred_1
 ```
 
 
